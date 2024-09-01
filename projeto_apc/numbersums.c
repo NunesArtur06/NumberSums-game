@@ -40,8 +40,14 @@ void config(){
     printf("Digite a opcao desejada: ");
 }
 
-void menu(){
-    printf(GREEN"* JOGO DAS SOMAS *\n\n"RESET);
+void menu(int modo){
+    printf(GREEN"* JOGO DAS SOMAS *\n"RESET);
+    switch(modo)
+    {
+        case 1: printf(CYAN"Modo Iniciante Selecionado\n\n"RESET); break;
+        case 2: printf(YELLOW"Modo Intermediario Selecionado\n\n"RESET); break;
+        case 3: printf(RED"Modo Avancado Selecionado\n\n"RESET); break;
+    }
     printf("1 - Jogar\n");
     printf("2 - Instrucoes\n");
     printf("3 - Configuracoes\n");
@@ -175,7 +181,29 @@ void LimpaRanking() {
 
 void matriz(int dificuldade)
 {
+    int x=0,y=0;
     FILE* matriz;
+
+    switch (dificuldade)
+    {
+        case 1: matriz= fopen("iniciante.txt","r"); break;
+        case 2: matriz= fopen("intermediario.txt","r"); break;
+        case 3: matriz= fopen("avancado.txt","r"); break;
+        default: printf(RED"Dificuldade nao selecionada"RESET); return;
+    }
+    for(x=0;x<20;x++)
+    {
+        fgetc(matriz);
+    }
+    printf("    ");
+    for(x=0;x<4;x++)
+    {
+        putchar(fgetc(matriz));
+        putchar(fgetc(matriz));
+        printf(" ");
+    }
+    printf("\n    -----------\n");
+    fclose(matriz);
 
     switch (dificuldade)
     {
@@ -186,16 +214,18 @@ void matriz(int dificuldade)
     }
     while (1)
     {
-        for(int x=5;x<7;x++)
+        for(x=0;x<4;x++)
         {
-            for(int y=0;y<9;y++)
+            printf("   ");
+            for (y=0;y<4;y++)
+            {
+                printf("  ");
                 putchar(fgetc(matriz));
+            }
+            printf("\n");
+            fgetc(matriz);
         }
-        for(int x=0;x<4;x++)
-        {
-            for(int y=0;y<5;y++)
-                putchar(fgetc(matriz));
-        }
+        return;
     }
 }
 /*void printMatrix(int matrix[SIZE][SIZE]) {
@@ -227,7 +257,7 @@ int main() {
 
 
     while (1) {
-        menu();
+        menu(modo);
         scanf("%d", &num);
         getchar();  // Consumir o newline residual
         limpaTela();
