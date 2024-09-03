@@ -182,6 +182,7 @@ void LimpaRanking() {
 void matriz(int dificuldade)
 {
     int x=0,y=0;
+    int coluna[8];
     FILE* matriz;
 
     switch (dificuldade)
@@ -202,6 +203,11 @@ void matriz(int dificuldade)
         putchar(fgetc(matriz));
         printf(" ");
     }
+    fgetc(matriz);
+    for(x=0;x<8;x++)
+    {
+        coluna[x]=fgetc(matriz);
+    }
     printf("\n    -----------\n");
     fclose(matriz);
 
@@ -216,11 +222,13 @@ void matriz(int dificuldade)
     {
         for(x=0;x<4;x++)
         {
-            printf("   ");
+            printf("%c",coluna[x*2]);
+            printf("%c",coluna[x*2+1]);
+            printf(" | ");
             for (y=0;y<4;y++)
             {
-                printf("  ");
                 putchar(fgetc(matriz));
+                printf("  ");
             }
             printf("\n");
             fgetc(matriz);
