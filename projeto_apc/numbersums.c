@@ -20,7 +20,30 @@ FILE* ranking;
 
 void instructions(){
     printf(GREEN"INSTRUCOES SOBRE O JOGO DAS SOMAS: \n\n"RESET);
-    printf("ESCREVER NESSE ESPAÇO AS INSTRUCOES SOBRE COMO JOGAR O JOGO.\n");
+    printf(GREEN"Objetivo do jogo: \n\n"RESET);
+    printf("O jogo sempre comeca com 5 vidas. O objetivo do jogo eh apagar os elementos das linhas e colunas de modo que os elementos restantes na tela, uma vez somando sao exatamente os valores mostrados no topo das colunas e na frente das linhas.\n\n");
+    printf(GREEN"COMO APAGAR UM ELEMENTO DA MATRIZ?\n\n"RESET); 
+    printf("Para apagar um elemento o jogador deve informar a linha e a coluna do numero a ser apagado. No modo iniciante a matriz do jogo eh 4x4, no modo intermediario a matriz eh 6x6 e no modo avancado a matriz eh 7x7. Para o jogador as linhas e colunas iniciam sempre em 1. \n\n\n\n");
+    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf("      06 03 21 19\n");
+    printf("     -------------\n");
+    printf("  19 | 2  4  8  9 \n");
+    printf("  09 | 8  7  6  3 \n");
+    printf("  11 | 4  8  1  7 \n");
+    printf("  10 | 2  3  7  7 \n\n");
+    printf("*** Voce tem 5 vidas ***\n");
+    printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
+}
+void res(){
+    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf("      06 03 21 19\n");
+    printf("     -------------\n");
+    printf("  19 | 2  4  8  9 \n");
+    printf("  09 | 8  7     3 \n");
+    printf("  11 | 4  8  1  7 \n");
+    printf("  10 | 2  3  7  7 \n\n");
+    printf("*** Voce tem 5 vidas ***\n");
+    printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void modo_dificuldade(){
     printf("* ESCOLHA O MODO DE JOGO *\n\n");
@@ -40,14 +63,13 @@ void config(){
 }
 
 void menu(int modo){
-    printf(GREEN"* JOGO DAS SOMAS *\n"RESET);
-    switch(modo)
-    {
-        case 1: printf(CYAN"Modo Iniciante Selecionado\n\n"RESET); break;
-        case 2: printf(YELLOW"Modo Intermediario Selecionado\n\n"RESET); break;
-        case 3: printf(RED"Modo Avancado Selecionado\n\n"RESET); break;
-    }
-    printf("1 - Jogar\n");
+    printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
+    printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
+    printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\___ \\   \\___ \\| |  | | |\\/| | / /\\ \\  \\___ \\ \n"RESET);
+    printf(GREEN"| |__| | |__| | |__| | |__| | | |__| / ____ \\ ____) |  ____) | |__| | |  | |/ ____ \\ ____) |\n"RESET);
+    printf(GREEN" \\____/ \\____/ \\_____|\\____/  |_____/_/    \\_\\_____/  |_____/ \\____/|_|  |_/_/    \\_\\_____/\n"RESET);;
+    printf("\n\n\n1 - Jogar\n");
     printf("2 - Instrucoes\n");
     printf("3 - Configuracoes\n");
     printf("4 - Ranking\n");
@@ -276,8 +298,12 @@ int main() {
         matriz(modo);
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
-        printf("\nTecle <enter> para voltar ao menu principal: ");
-        getchar();  // Esperar pelo Enter para voltar ao menu principal
+        printf("\nTecle <enter> para continuar: ");
+        getchar();  // Esperar pelo Enter para printar o resultado do exemplo
+        limpaTela();
+        res();
+        printf("\nTecle <enter> para voltar para o menu: ");
+        getchar();
         limpaTela();
     } else if (num == 3) { // CONFIGURAÇÕES
         int voltar = 0; // Flag para voltar ao menu principal
