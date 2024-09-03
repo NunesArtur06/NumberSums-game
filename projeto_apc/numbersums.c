@@ -21,7 +21,6 @@ FILE* ranking;
 void instructions(){
     printf(GREEN"INSTRUCOES SOBRE O JOGO DAS SOMAS: \n\n"RESET);
     printf("ESCREVER NESSE ESPAÇO AS INSTRUCOES SOBRE COMO JOGAR O JOGO.\n");
-    printf("Tecle <enter> para prosseguir\n");
 }
 void modo_dificuldade(){
     printf("* ESCOLHA O MODO DE JOGO *\n\n");
@@ -171,6 +170,7 @@ void LimpaRanking() {
     fclose(ranking);
 
     printf("Ranking limpo com sucesso!\n");
+    printf("\nTecle <enter> para voltar.");
 }
 
 void matriz(int dificuldade)
@@ -227,18 +227,21 @@ int main() {
 
 
     while (1) {
-        menu();
-        scanf("%d", &num);
-        getchar();  // Consumir o newline residual
-        limpaTela();
+    menu();
+    scanf("%d", &num);
+    getchar();  // Consumir o newline residual
+    limpaTela();
 
-        if (num == 1) { // JOGAR
-            matriz(modo);
-        } else if (num == 2) { // INSTRUÇÕES
-            instructions();
-            getchar();  // Aguarda o Enter para prosseguir
-            limpaTela();
-        } else if (num == 3) { // CONFIGURAÇÕES
+    if (num == 1) { // JOGAR
+        matriz(modo);
+    } else if (num == 2) { // INSTRUÇÕES
+        instructions();
+        printf("\nTecle <enter> para voltar ao menu principal: ");
+        getchar();  // Esperar pelo Enter para voltar ao menu principal
+        limpaTela();
+    } else if (num == 3) { // CONFIGURAÇÕES
+        int voltar = 0; // Flag para voltar ao menu principal
+        while (!voltar) {
             config();
             scanf("%d", &opcao);
             getchar();  // Consumir o newline residual
@@ -247,40 +250,51 @@ int main() {
                 limpaTela();
                 printf("* RANKING *\n\n\n\n\n");
                 LimpaRanking();
+                getchar();  // Esperar pelo Enter para voltar ao submenu de configurações
+                limpaTela();
             } else if (opcao == 2) { // MODO DE DIFICULDADE
                 limpaTela();
                 modo_dificuldade();
                 scanf("%d", &modo);
+                getchar();
 
                 if (modo == 1) { // MODO INICIANTE
                     limpaTela();
                     printf(CYAN"MODO INICIANTE SELECIONADO\n"RESET);
+                    printf("\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 2) { // MODO INTERMEDIÁRIO
                     limpaTela();
-                    printf(YELLOW"MODO INTERMEDIÁRIO SELECIONADO\n"RESET);
+                    printf(YELLOW"MODO INTERMEDIARIO SELECIONADO\n"RESET);
+                    printf("\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 3) { // MODO AVANÇADO
                     limpaTela();
-                    printf(RED"MODO AVANÇADO SELECIONADO\n"RESET);
+                    printf(RED"MODO AVANCADO SELECIONADO\n"RESET);
+                    printf("\n\n\nPressione <enter> para voltar: ");
                 } else {
                     limpaTela();
-                    continue;
+                    continue; // Voltar ao submenu de configurações
                 }
+
+                //voltando para o submenu de config
+                getchar();  // Esperar pelo Enter para voltar ao submenu de configurações
+                limpaTela();
             } else if (opcao == 3) { // VOLTAR PARA O MENU
                 limpaTela();
-                continue;  // Voltar ao menu principal
+                voltar = 1;  // Sair do submenu de configuracoes e voltar ao menu principal
             }
-        } else if (num == 4) { // RANKING
-            MostraRanking();
-        } else if (num == 5) {
-            printf("Saindo...\n");
-            break;  // Sair do loop e terminar o programa
-        } else {
-            printf("Opção inválida!\n");
         }
-
-        printf("\nTecle <enter> para voltar ao menu principal\n");
-        getchar();
+    } else if (num == 4) { // RANKING
+        MostraRanking();
+        printf("\nTecle <enter> para voltar ao menu principal: ");
+        getchar();  // Esperar pelo Enter para voltar ao menu principal
         limpaTela();
+    } else if (num == 5) {
+        printf("Saindo...\n");
+        break;  // Sair do loop e terminar o programa
+    } else {
+        printf("Opção inválida!\n");
     }
-    return 0;
+}
+
+return 0;
 }
