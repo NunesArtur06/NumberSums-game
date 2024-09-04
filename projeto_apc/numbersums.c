@@ -227,17 +227,17 @@ void matriz(int dificuldade) //Gera a matriz
         default: printf(RED"Dificuldade nao selecionada"RESET); return;
     }
 
-    for(x=0;x<tamanho * tamanho;x++) //pula os números internos da matriz
+    for(x=0;x<(tamanho * tamanho)+tamanho;x++) //pula os números internos da matriz
     {
         fgetc(matriz);
     }
 
-    printf("        ");
+    printf("      ");
     for(x=0;x<tamanho;x++)//Printa os números da linha da soma, de 2 em 2
     {
         putchar(fgetc(matriz));
         putchar(fgetc(matriz));
-        printf(" ");
+        printf("  ");
     }
     fgetc(matriz);//Come o <enter>
 
