@@ -62,7 +62,7 @@ void config(){
     printf("Digite a opcao desejada: ");
 }
 
-void menu(int modo){
+void menu(){
     printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
     printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
     printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
@@ -203,83 +203,84 @@ void LimpaRanking() {
 
 void matriz(int dificuldade) //Gera a matriz
 {
+
+
     int x=0,y=0; //Variáveis de controle
-    int coluna[8]; //Armazena os valores das somas da coluna
+    int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
+    int tamanho = 0; //tamanho da matriz
     FILE* matriz; //Variável de arquivo
 
     switch (dificuldade) //Busca a dificuldade selecionada
     {
-        case 1: matriz= fopen("iniciante.txt","r"); break;
-        case 2: matriz= fopen("intermediario.txt","r"); break;
-        case 3: matriz= fopen("avancado.txt","r"); break;
+        case 1: 
+            matriz= fopen("iniciante.txt","r");
+            tamanho = 4; //iniciante (4x4)
+            break;
+        case 2: 
+            matriz= fopen("intermediario.txt","r"); 
+            tamanho = 6; //iniciante (6x6)
+            break;
+        case 3: 
+            matriz= fopen("avancado.txt","r"); 
+            tamanho = 7; //iniciante (7x7)
+            break;
         default: printf(RED"Dificuldade nao selecionada"RESET); return;
     }
 
-    for(x=0;x<20;x++) //pula os números internos da matriz
+    for(x=0;x<tamanho * tamanho;x++) //pula os números internos da matriz
     {
         fgetc(matriz);
     }
-    printf("    "); //Espaço
-    for(x=0;x<4;x++)//Printa os números da linha da soma, de 2 em 2
+
+    printf("        ");
+    for(x=0;x<tamanho;x++)//Printa os números da linha da soma, de 2 em 2
     {
         putchar(fgetc(matriz));
         putchar(fgetc(matriz));
         printf(" ");
     }
     fgetc(matriz);//Come o <enter>
-    for(x=0;x<8;x++)//Armazena as 4 somas da coluna. 4 números de 2 algarismos = 8
+
+    for(x=0;x<tamanho * 2;x++)//Armazena as somas da coluna.
     {
         coluna[x]=fgetc(matriz);
     }
-    printf("\n    -----------\n"); //separação
-    fclose(matriz); //fehcar que é bom
+    printf("\n     "); 
+    for (x = 0; x < tamanho * 3; x++) printf("-"); // A linha divisória é adaptada ao número de colunas
+    printf("\n");
 
-    switch (dificuldade) //pegando a dificuldade dnv pra abrir o arquivo dnv
+    fclose(matriz); //fecha o arquivo
+
+    switch (dificuldade) //Reabre o arquivo para printar a matriz
     {
         case 1: matriz= fopen("iniciante.txt","r"); break;
         case 2: matriz= fopen("intermediario.txt","r"); break;
         case 3: matriz= fopen("avancado.txt","r"); break;
-        default: printf(RED"Dificuldade nao selecionada"RESET); return;
+        default: return;
     }
 
-    while (1) //Gera os números internos da matriz e a coluna das somas
-    {
-        for(x=0;x<4;x++) //4 linhas
-        {
-            printf("%c",coluna[x*2]); //printa 2 algarismos da coluna das somas no início de cada linha
-            printf("%c",coluna[x*2+1]); //a conta é pra printar o 0 e 1, dps 2 e 3, dps 4 e 5...
-            printf(" | "); //separar
-            for (y=0;y<4;y++) //4 números ou colunas
-            {
-                putchar(fgetc(matriz)); //número da matriz
-                printf("  "); //espaço entre números
-            }
-            printf("\n"); //passa a linha
-            fgetc(matriz); //come o <enter>
+    for (x = 0; x < tamanho; x++) {
+        printf("  %c%c | ", coluna[x * 2], coluna[x * 2 + 1]); // Exibe as somas das colunas à esquerda, alinhadas corretamente
+        for (y = 0; y < tamanho; y++) {
+            putchar(fgetc(matriz)); // Imprime cada valor da matriz com espaços para alinhamento
+            printf("  "); // Espaçamento entre os valores da matriz
         }
-        return; //fecha o loop
+        printf("\n"); // Passa para a próxima linha da matriz
+        fgetc(matriz); // Consome o caractere <enter> ao final de cada linha
     }
-}
-/*void printMatrix(int matrix[SIZE][SIZE]) {
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            printf("%d ", matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
 
-void printArray(int array[SIZE]) {
-    for (int i = 0; i < SIZE; i++) {
-        printf("%d ", array[i]);
-    }
-    printf("\n");
-}*/
+    return;
+}
+    
+
+
 
 
 int main() {
     char nickname[50];
     int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
+    int coordenada=0;
+
 
     printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
     printf("Informe seu nickname: ");
@@ -289,13 +290,17 @@ int main() {
 
 
     while (1) {
-        menu(modo);
+        menu();
         scanf("%d", &num);
         getchar();  // Consumir o newline residual
         limpaTela();
 
     if (num == 1) { // JOGAR
+        limpaTela();//limpa a tela
         matriz(modo);
+        printf(GREEN"\n\n*** VOCE TEM 5 VIDAS ***\n"RESET);
+        printf("Digite a linha e coluna do elemento a ser apagado: ");
+        scanf("%d", &coordenada);
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
         printf("\nTecle <enter> para continuar: ");
