@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+int tamanho;  //tamanho da matriz
 
 #define CLEAR "cls"
 
@@ -208,9 +208,12 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
 
     switch (dificuldade) //Busca a dificuldade selecionada
     {
-        case 1: original= fopen("iniciante.txt","r"); break;
-        case 2: original= fopen("intermediario.txt","r"); break;
-        case 3: original= fopen("avancado.txt","r"); break;
+        case 1: original= fopen("iniciante.txt","r");
+        tamanho = 4; break;
+        case 2: original= fopen("intermediario.txt","r");
+        tamanho = 6;  break;
+        case 3: original= fopen("avancado.txt","r");
+        tamanho = 7; break;
         default: printf(RED"Dificuldade nao selecionada"RESET); return;
     }
     while ((chr=fgetc(original))!=EOF)
@@ -223,29 +226,10 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
 
 void matriz(int dificuldade) //Gera a matriz
 {
-
-
     int x=0,y=0; //Variáveis de controle
     int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
-    int tamanho = 0; //tamanho da matriz
     FILE* matriz; //Variável de arquivo
-
-    switch (dificuldade) //Busca a dificuldade selecionada
-    {
-        case 1: 
-            matriz= fopen("iniciante.txt","r");
-            tamanho = 4; //iniciante (4x4)
-            break;
-        case 2: 
-            matriz= fopen("intermediario.txt","r"); 
-            tamanho = 6; //iniciante (6x6)
-            break;
-        case 3: 
-            matriz= fopen("avancado.txt","r"); 
-            tamanho = 7; //iniciante (7x7)
-            break;
-        default: printf(RED"Dificuldade nao selecionada"RESET); return;
-    }
+    matriz= fopen("copia.txt","r");
 
     for(x=0;x<(tamanho * tamanho)+tamanho;x++) //pula os números internos da matriz
     {
@@ -270,13 +254,7 @@ void matriz(int dificuldade) //Gera a matriz
     printf("\n");
 
     fclose(matriz); //fecha o arquivo
-    switch (dificuldade) //Reabre o arquivo para printar a matriz
-    {
-        case 1: matriz= fopen("iniciante.txt","r"); break;
-        case 2: matriz= fopen("intermediario.txt","r"); break;
-        case 3: matriz= fopen("avancado.txt","r"); break;
-        default: return;
-    }
+    matriz= fopen("copia.txt","r");
 
     for (x = 0; x < tamanho; x++) {
         printf("  %c%c | ", coluna[x * 2], coluna[x * 2 + 1]); // Exibe as somas das colunas à esquerda, alinhadas corretamente
