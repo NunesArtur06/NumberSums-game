@@ -200,6 +200,26 @@ void LimpaRanking() {
     printf("Ranking limpo com sucesso!\n");
     printf("\nTecle <enter> para voltar.");
 }
+void copiaMatriz(int dificuldade) //clona o arquivo escolhido
+{
+    FILE* copia = fopen("copia.txt","w");
+    FILE* original;
+    char chr;
+
+    switch (dificuldade) //Busca a dificuldade selecionada
+    {
+        case 1: original= fopen("iniciante.txt","r"); break;
+        case 2: original= fopen("intermediario.txt","r"); break;
+        case 3: original= fopen("avancado.txt","r"); break;
+        default: printf(RED"Dificuldade nao selecionada"RESET); return;
+    }
+    while ((chr=fgetc(original))!=EOF)
+    {
+        fprintf(copia,"%c",chr);
+    }
+    fclose(copia);
+    fclose(original);
+}
 
 void matriz(int dificuldade) //Gera a matriz
 {
@@ -270,9 +290,6 @@ void matriz(int dificuldade) //Gera a matriz
 
     return;
 }
-   
-
-
 
 int main() {
     char nickname[50];
@@ -296,6 +313,7 @@ int main() {
 
     if (num == 1) { // JOGAR
         limpaTela();//limpa a tela
+        copiaMatriz(modo);
         matriz(modo);
         printf(GREEN"\n\n*** VOCE TEM 5 VIDAS ***\n"RESET);
         printf("Digite a linha e coluna do elemento a ser apagado: ");
