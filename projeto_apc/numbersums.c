@@ -250,7 +250,6 @@ void matriz(int dificuldade) //Gera a matriz
     printf("\n");
 
     fclose(matriz); //fecha o arquivo
-
     switch (dificuldade) //Reabre o arquivo para printar a matriz
     {
         case 1: matriz= fopen("iniciante.txt","r"); break;
@@ -271,13 +270,14 @@ void matriz(int dificuldade) //Gera a matriz
 
     return;
 }
-    
+   
 
 
 
 int main() {
     char nickname[50];
     int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
+
     int linha=0, coluna=0;
 
     limpaTela();
