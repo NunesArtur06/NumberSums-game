@@ -237,7 +237,7 @@ void matriz(int dificuldade) //Gera a matriz
     {
         putchar(fgetc(matriz));
         putchar(fgetc(matriz));
-        printf("  ");
+        printf(" ");
     }
     fgetc(matriz);//Come o <enter>
 
