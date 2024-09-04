@@ -250,7 +250,6 @@ void matriz(int dificuldade) //Gera a matriz
     printf("\n");
 
     fclose(matriz); //fecha o arquivo
-
     switch (dificuldade) //Reabre o arquivo para printar a matriz
     {
         case 1: matriz= fopen("iniciante.txt","r"); break;
@@ -271,17 +270,17 @@ void matriz(int dificuldade) //Gera a matriz
 
     return;
 }
-    
-
+   
 
 
 
 int main() {
     char nickname[50];
     int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
-    int coordenada=0;
 
+    int linha=0, coluna=0;
 
+    limpaTela();
     printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
     printf("Informe seu nickname: ");
     scanf("%s", nickname); 
@@ -300,7 +299,8 @@ int main() {
         matriz(modo);
         printf(GREEN"\n\n*** VOCE TEM 5 VIDAS ***\n"RESET);
         printf("Digite a linha e coluna do elemento a ser apagado: ");
-        scanf("%d", &coordenada);
+        scanf("%d %d", &linha, &coluna);
+        limpaTela();
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
         printf("\nTecle <enter> para continuar: ");
@@ -363,7 +363,11 @@ int main() {
         printf("Saindo...\n");
         break;  // Sair do loop e terminar o programa
     } else {
-        printf("Opção inválida!\n");
+        limpaTela();
+        printf(RED"OPCAO INVALIDA!\n\n\n");
+        printf(RED"PRESSIONE <enter> E TENTE NOVAMENTE!\n\n\n"RESET);
+        getchar();
+        limpaTela();
     }
 }
 
