@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 int tamanho;  //tamanho da matriz
+char nomes[900][20]; //900 linhas de 20 caracteres cada
+int pts[900]; // lista das pontuacoes
 
 #define CLEAR "cls"
 
@@ -80,7 +82,45 @@ void menu(){
 void limpaTela() {
     system(CLEAR);
 }
+int leRanking(){
+    FILE *fp = fopen("ranking.bin", "r");
+    int index=0;
+    struct batata{
+        int pontuacao;
+        char nome[20];
+    };
 
+    struct batata bat; // variavel
+    
+    
+    while(fread( &bat, sizeof(bat), 1, fp)){
+        printf("%d %s\n", bat.pontuacao, bat.nome);
+        strcpy(nomes[index], bat.nome);
+        pts[index] = bat.pontuacao;
+        index++;
+        
+    }
+    fclose (fp);
+    return index; // retorna o tamanho do ranking
+}
+
+void escreveRanking(int index){
+    FILE *fp = fopen("ranking.bin", "w");
+    struct batata{
+        int pontuacao;
+        char nome[20];
+    };
+
+    struct batata bat; // variavel
+    
+    for( int i = 0; i < index; i++){
+        bat.pontuacao = pts[i];
+        strcpy(bat.nome, nomes[i]);
+        fwrite(&bat, sizeof(bat), 1, fp);
+    }
+    fclose (fp);
+    
+}
 void AlteraRanking(char* nickname, int pontos) {
     char linha[50 + 1 + 3];   // 50 do nickname, 1 do ":", 3 da pontuação
     char nickRanking[50];     // Guarda um nick retirado do ranking
@@ -224,7 +264,7 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
     fclose(original);
 }
 
-void matriz(int dificuldade) //Gera a matriz
+void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
     int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
@@ -270,6 +310,14 @@ void matriz(int dificuldade) //Gera a matriz
 }
 
 int main() {
+    int val = leRanking();
+    printf("%d\n", val);
+    strcpy(nomes[val], "teste");
+    pts[val] = 30;
+    escreveRanking(val+1);
+    leRanking();
+    getchar();
+    //teste
     char nickname[50];
     int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
 
