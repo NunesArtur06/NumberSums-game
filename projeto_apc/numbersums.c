@@ -48,16 +48,16 @@ void res(){
     printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void modo_dificuldade(){
-    printf("* ESCOLHA O MODO DE JOGO *\n\n");
-    printf(CYAN"1 - Iniciante\n"RESET);
-    printf(YELLOW"2 - Intermediario\n"RESET);
-    printf(RED"3 - Avancado\n"RESET);
+    printf(GREEN"*** ESCOLHA O MODO DE JOGO ***\n\n"GREEN);
+    printf("1 - Iniciante\n");
+    printf("2 - Intermediario\n");
+    printf("3 - Avancado\n");
     printf("4 - Retornar\n\n");
     printf("Digite a opcao desejada: ");
 }
 
 void config(){
-    printf("* CONFIGURACOES *\n\n");
+    printf(GREEN"*** CONFIGURACOES ***\n\n"RESET);
     printf("1 - Zerar Ranking\n");
     printf("2 - Modo de Dificuldade\n");
     printf("3 - Voltar ao menu principal\n\n");
@@ -82,45 +82,80 @@ void menu(){
 void limpaTela() {
     system(CLEAR);
 }
-int leRanking(){
-    FILE *fp = fopen("ranking.bin", "r");
-    int index=0;
-    struct dados{
+int leRanking() {
+    FILE *fp = fopen("ranking.bin", "rb");
+    if (fp == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return 0;
+    }
+
+    int index = 0;
+    struct dados {
         int pontuacao;
         char nome[20];
     };
-
-    struct dados jogador; // variavel
+    struct dados jogador;
     
-    
-    while(fread( &jogador, sizeof(jogador), 1, fp)){
-        printf("%d %s\n", jogador.pontuacao, jogador.nome);
-        strcpy(nomes[index], jogador.nome);
-        pts[index] = jogador.pontuacao;
+    while (fread(&jogador, sizeof(jogador), 1, fp)) {
+        strcpy(nomes[index], jogador.nome); // Copia o nome para o array de nomes
+        pts[index] = jogador.pontuacao;     // Copia a pontuação para o array de pontuações
         index++;
-        
     }
-    fclose (fp);
-    return index; // retorna o tamanho do ranking
+    
+    fclose(fp);
+    return index; // Retorna o tamanho do ranking
 }
 
-void escreveRanking(int index){
-    FILE *fp = fopen("ranking.bin", "w");
-    struct dados{
+// Função para escrever o ranking atualizado no arquivo binário
+void escreveRanking(int index) {
+    FILE *fp = fopen("ranking.bin", "wb");
+    if (fp == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    struct dados {
         int pontuacao;
         char nome[20];
     };
-
-    struct dados jogador; // variavel
+    struct dados jogador;
     
-    for( int i = 0; i < index; i++){
+    for (int i = 0; i < index; i++) {
         jogador.pontuacao = pts[i];
         strcpy(jogador.nome, nomes[i]);
-        fwrite(&jogador, sizeof(jogador), 1, fp);
+        fwrite(&jogador, sizeof(jogador), 1, fp); // Escreve o jogador no arquivo
     }
-    fclose (fp);
     
+    fclose(fp);
 }
+
+// Função para adicionar um novo jogador ao ranking
+void adicionaJogador(int *index, char *novoNome, int novaPontuacao) {
+    strcpy(nomes[*index], novoNome); // Adiciona o nome no array de nomes
+    pts[*index] = novaPontuacao;     // Adiciona a pontuação no array de pontuações
+    (*index)++;                      // Incrementa o tamanho do ranking
+}
+
+// Função para ordenar o ranking por pontuação (Bubble Sort)
+void ordenaRanking(int index) {
+    for (int i = 0; i < index - 1; i++) {
+        for (int j = 0; j < index - i - 1; j++) {
+            if (pts[j] < pts[j + 1]) { // Ordena em ordem decrescente
+                // Troca pontuação
+                int tempPts = pts[j];
+                pts[j] = pts[j + 1];
+                pts[j + 1] = tempPts;
+                
+                // Troca nomes
+                char tempNome[20];
+                strcpy(tempNome, nomes[j]);
+                strcpy(nomes[j], nomes[j + 1]);
+                strcpy(nomes[j + 1], tempNome);
+            }
+        }
+    }
+}
+
 void AlteraRanking(char* nickname, int pontos) {
     char linha[50 + 1 + 3];   // 50 do nickname, 1 do ":", 3 da pontuação
     char nickRanking[50];     // Guarda um nick retirado do ranking
@@ -128,7 +163,7 @@ void AlteraRanking(char* nickname, int pontos) {
     int encontrou = 0;
 
     // Abrir o arquivo ranking.txt para leitura
-    FILE *ranking = fopen("ranking.txt", "r");
+    FILE *ranking = fopen("ranking.txt", "rb");
     FILE *temp = fopen("temp.txt", "w");  // Arquivo temporário para armazenar o ranking atualizado
 
     // Se o arquivo não for encontrado, printa uma mensagem de erro
@@ -158,8 +193,8 @@ void AlteraRanking(char* nickname, int pontos) {
     fclose(temp);
 
     // Reabrir o arquivo temporário para leitura e o ranking.txt para escrita
-    temp = fopen("temp.txt", "r");
-    ranking = fopen("ranking.txt", "w");
+    temp = fopen("temp.bin", "rb");
+    ranking = fopen("ranking.bin", "wb");
 
     if (ranking == NULL || temp == NULL) {
         perror("Impossível encontrar arquivo");
@@ -205,28 +240,24 @@ void AlteraRanking(char* nickname, int pontos) {
     fclose(temp);
 
     // Remove o arquivo temporário
-    remove("temp.txt");
+    remove("temp.bin");
 }
 
+void printRanking(int index) {
+    if (index == 0) {
+        printf(GREEN"*** RANKING ***\n\n\n\n\n\n\n"RESET);
+        printf("Nenhum jogador no ranking.\n");
+        return;
+    }
 
-void MostraRanking()
-{
-    printf("* RANKING *\n\n");
-    char letra; //Armazena um caractere do ranking
-
-    ranking = fopen("ranking.bin","rb"); //Abre o arquivo como "r", para ser lido
-    if (ranking == NULL)
-        perror("Impossivel encontrar arquivo");
-    
-    while((letra=fgetc(ranking))!=EOF) //Pega um caractere do ranking enquanto o arquivo não acabar
-                                       //Automaticamente passa para o próximo caractere
-        putchar(letra); //Printa o caractere
-
-    fclose(ranking);
+    printf(GREEN"\n*** RANKING ***\n"RESET);
+    for (int i = 0; i < index; i++) {
+        printf("%d. %s - %d pontos\n", i + 1, nomes[i], pts[i]);
+    }
 }
 
 void LimpaRanking() {
-    FILE *ranking = fopen("ranking.bin", "wb");  // Abre o arquivo em modo "w", o que limpa o conteúdo
+    FILE *ranking = fopen("ranking.bin", "w");  // Abre o arquivo em modo "wb", o que limpa o conteúdo
 
     // Se o arquivo não puder ser aberto, imprime uma mensagem de erro
     if (ranking == NULL) {
@@ -237,7 +268,7 @@ void LimpaRanking() {
     // Fecha o arquivo após limpar (escrever nada nele)
     fclose(ranking);
 
-    printf("Ranking limpo com sucesso!\n");
+    printf(GREEN"Ranking limpo com sucesso!\n"RESET);
     printf("\nTecle <enter> para voltar.");
 }
 void copiaMatriz(int dificuldade) //clona o arquivo escolhido
@@ -310,25 +341,23 @@ void matriz() //Gera a matriz
 }
 
 int main() {
-    //teste
-    int val = leRanking();
-    //printf("%d\n", val);
-    strcpy(nomes[val], "teste");
-    pts[val] = 30;
-    escreveRanking(val+1);
-    leRanking();
-    //getchar();
-    //fim teste
+    int index = leRanking();
     limpaTela();
-    char nickname[50];
-    int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
+    char nome[50];
+    int num, opcao, modo = 1, ponto; // Modo inicia automaticamente no Iniciante
 
     int linha=0, coluna=0;
 
     limpaTela();
     printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
     printf("Informe seu nickname: ");
-    scanf("%s", nickname); 
+    scanf("%s", nome); 
+    printf("teste p/ ranking. pts: ")/
+    scanf("%d", &ponto);
+
+    adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
+    ordenaRanking(index); // Ordena o ranking por pontuação
+    escreveRanking(index); // Escreve o ranking atualizado no arquivo binário
 
     limpaTela();
 
@@ -365,7 +394,7 @@ int main() {
 
             if (opcao == 1) { // ZERAR RANKING
                 limpaTela();
-                printf("* RANKING *\n\n\n\n\n");
+                printf(GREEN"*** RANKING ***\n\n\n\n\n"RESET);
                 LimpaRanking();
                 getchar();  // Esperar pelo Enter para voltar ao submenu de configurações
                 limpaTela();
@@ -377,16 +406,16 @@ int main() {
 
                 if (modo == 1) { // MODO INICIANTE
                     limpaTela();
-                    printf(CYAN"MODO INICIANTE SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO INICIANTE SELECIONADO\n"RESET);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 2) { // MODO INTERMEDIÁRIO
                     limpaTela();
-                    printf(YELLOW"MODO INTERMEDIARIO SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO INTERMEDIARIO SELECIONADO\n"RESET);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 3) { // MODO AVANÇADO
                     limpaTela();
-                    printf(RED"MODO AVANCADO SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO AVANCADO SELECIONADO\n"RESET);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else {
                     limpaTela();
                     continue; // Voltar ao submenu de configurações
@@ -401,7 +430,8 @@ int main() {
             }
         }
     } else if (num == 4) { // RANKING
-        MostraRanking();
+        index = leRanking();
+        printRanking(index);
         printf("\nTecle <enter> para voltar ao menu principal: ");
         getchar();  // Esperar pelo Enter para voltar ao menu principal
         limpaTela();
