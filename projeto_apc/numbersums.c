@@ -297,16 +297,53 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
 
 void alteraMatriz(int linha, int coluna, int *vida)
 {
-    int i,j;
+    int i,j,k=0;
     FILE* matriz = fopen("copia.txt","r");
     int coord = coluna+(linha-1)*(tamanho+1);
-    char errou;
+    char errou, ch;
     for (i=0;i<(tamanho*(tamanho+5)+2);i++)//O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
         getc(matriz);
     for(i=0;i<coord;i++)
         errou = getc(matriz);
+    fclose(matriz);
     if (errou=='1')
+    {
         *vida-=1;
+    }
+    else
+    {
+        FILE* velhaMatriz = fopen("copia.txt","r");
+        FILE* novaMatriz = fopen("copianova.txt","w");
+        while ((ch = fgetc(velhaMatriz)) != EOF) 
+        {
+            if(k==(coord-1))
+            {
+                fputc(' ',novaMatriz);
+            }
+            else
+            {
+                fputc(ch, novaMatriz);
+            }
+            k++;
+        }
+        fclose(velhaMatriz);
+        fclose(novaMatriz);
+
+        remove("copia.txt");
+        rename("copianova.txt", "copia.txt");
+
+        if (remove("copia.txt") != 0) 
+        {
+        perror("Erro ao deletar o arquivo original");
+        exit(1);
+        }
+
+        if (rename("copianova.txt", "copia.txt") != 0) 
+        {
+        perror("Erro ao renomear o arquivo temporário");
+        exit(1);
+        }
+    }
 
 }
 
@@ -362,7 +399,7 @@ int main() {
     int num, opcao, modo=1, ponto, vida=5, i; // Modo inicia automaticamente no Iniciante
 
     int linha=0, coluna=0;
-
+    copiaMatriz(modo);
     limpaTela();
     printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
     printf("Informe seu nickname: ");
@@ -385,7 +422,6 @@ int main() {
 
     if (num == 1) { // JOGAR
         limpaTela();//limpa a tela
-        copiaMatriz(modo);
         matriz(modo);
         printf(GREEN"\n\n*** VOCE TEM ");printf(RED"%d"RESET,vida);printf(GREEN" VIDAS***\n"RESET);
         printf("Digite a linha e coluna do elemento a ser apagado: ");
@@ -423,14 +459,17 @@ int main() {
                 if (modo == 1) { // MODO INICIANTE
                     limpaTela();
                     printf(GREEN"MODO INICIANTE SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
                     printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 2) { // MODO INTERMEDIÁRIO
                     limpaTela();
                     printf(GREEN"MODO INTERMEDIARIO SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
                     printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 3) { // MODO AVANÇADO
                     limpaTela();
                     printf(GREEN"MODO AVANCADO SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
                     printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else {
                     limpaTela();
