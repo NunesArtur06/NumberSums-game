@@ -329,22 +329,15 @@ void alteraMatriz(int linha, int coluna, int *vida)
         fclose(velhaMatriz);
         fclose(novaMatriz);
 
-        remove("copia.txt");
-        rename("copianova.txt", "copia.txt");
-
-        if (remove("copia.txt") != 0) 
+        velhaMatriz = fopen("copia.txt","w");
+        novaMatriz = fopen("copianova.txt","r");
+        while ((ch = fgetc(novaMatriz)) != EOF) 
         {
-        perror("Erro ao deletar o arquivo original");
-        exit(1);
+            fputc(ch, velhaMatriz);
         }
-
-        if (rename("copianova.txt", "copia.txt") != 0) 
-        {
-        perror("Erro ao renomear o arquivo temporário");
-        exit(1);
-        }
+        fclose(velhaMatriz);
+        fclose(novaMatriz);
     }
-
 }
 
 void matriz() //Gera a matriz
