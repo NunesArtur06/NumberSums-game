@@ -85,18 +85,18 @@ void limpaTela() {
 int leRanking(){
     FILE *fp = fopen("ranking.bin", "r");
     int index=0;
-    struct batata{
+    struct dados{
         int pontuacao;
         char nome[20];
     };
 
-    struct batata bat; // variavel
+    struct dados jogador; // variavel
     
     
-    while(fread( &bat, sizeof(bat), 1, fp)){
-        printf("%d %s\n", bat.pontuacao, bat.nome);
-        strcpy(nomes[index], bat.nome);
-        pts[index] = bat.pontuacao;
+    while(fread( &jogador, sizeof(jogador), 1, fp)){
+        printf("%d %s\n", jogador.pontuacao, jogador.nome);
+        strcpy(nomes[index], jogador.nome);
+        pts[index] = jogador.pontuacao;
         index++;
         
     }
@@ -106,17 +106,17 @@ int leRanking(){
 
 void escreveRanking(int index){
     FILE *fp = fopen("ranking.bin", "w");
-    struct batata{
+    struct dados{
         int pontuacao;
         char nome[20];
     };
 
-    struct batata bat; // variavel
+    struct dados jogador; // variavel
     
     for( int i = 0; i < index; i++){
-        bat.pontuacao = pts[i];
-        strcpy(bat.nome, nomes[i]);
-        fwrite(&bat, sizeof(bat), 1, fp);
+        jogador.pontuacao = pts[i];
+        strcpy(jogador.nome, nomes[i]);
+        fwrite(&jogador, sizeof(jogador), 1, fp);
     }
     fclose (fp);
     
@@ -214,7 +214,7 @@ void MostraRanking()
     printf("* RANKING *\n\n");
     char letra; //Armazena um caractere do ranking
 
-    ranking = fopen("ranking.txt","r"); //Abre o arquivo como "r", para ser lido
+    ranking = fopen("ranking.bin","rb"); //Abre o arquivo como "r", para ser lido
     if (ranking == NULL)
         perror("Impossivel encontrar arquivo");
     
@@ -226,7 +226,7 @@ void MostraRanking()
 }
 
 void LimpaRanking() {
-    FILE *ranking = fopen("ranking.txt", "w");  // Abre o arquivo em modo "w", o que limpa o conteúdo
+    FILE *ranking = fopen("ranking.bin", "wb");  // Abre o arquivo em modo "w", o que limpa o conteúdo
 
     // Se o arquivo não puder ser aberto, imprime uma mensagem de erro
     if (ranking == NULL) {
@@ -310,14 +310,16 @@ void matriz() //Gera a matriz
 }
 
 int main() {
+    //teste
     int val = leRanking();
-    printf("%d\n", val);
+    //printf("%d\n", val);
     strcpy(nomes[val], "teste");
     pts[val] = 30;
     escreveRanking(val+1);
     leRanking();
-    getchar();
-    //teste
+    //getchar();
+    //fim teste
+    limpaTela();
     char nickname[50];
     int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
 
