@@ -295,6 +295,21 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
     fclose(original);
 }
 
+void alteraMatriz(int linha, int coluna, int *vida)
+{
+    int i,j;
+    FILE* matriz = fopen("copia.txt","r");
+    int coord = coluna+(linha-1)*(tamanho+1);
+    char errou;
+    for (i=0;i<(tamanho*(tamanho+5)+2);i++)//O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
+        getc(matriz);
+    for(i=0;i<coord;i++)
+        errou = getc(matriz);
+    if (errou=='1')
+        *vida-=1;
+
+}
+
 void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
@@ -344,7 +359,7 @@ int main() {
     int index = leRanking();
     limpaTela();
     char nome[50];
-    int num, opcao, modo = 1, ponto; // Modo inicia automaticamente no Iniciante
+    int num, opcao, modo=1, ponto, vida=5, i; // Modo inicia automaticamente no Iniciante
 
     int linha=0, coluna=0;
 
@@ -372,9 +387,10 @@ int main() {
         limpaTela();//limpa a tela
         copiaMatriz(modo);
         matriz(modo);
-        printf(GREEN"\n\n*** VOCE TEM 5 VIDAS ***\n"RESET);
+        printf(GREEN"\n\n*** VOCE TEM ");printf(RED"%d"RESET,vida);printf(GREEN" VIDAS***\n"RESET);
         printf("Digite a linha e coluna do elemento a ser apagado: ");
         scanf("%d %d", &linha, &coluna);
+        alteraMatriz(linha,coluna,&vida);
         limpaTela();
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
