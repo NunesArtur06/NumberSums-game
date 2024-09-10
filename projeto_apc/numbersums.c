@@ -20,6 +20,9 @@ int pts[900]; // lista das pontuacoes
 //Cria a variável de arquivo "ranking"
 FILE* ranking;
 
+void limpaTela() {
+    system(CLEAR);
+}
 void instructions(){
     printf(GREEN"INSTRUCOES SOBRE O JOGO DAS SOMAS: \n\n"RESET);
     printf(GREEN"Objetivo do jogo: \n\n"RESET);
@@ -64,6 +67,24 @@ void config(){
     printf("Digite a opcao desejada: ");
 }
 
+void vocePerdeu(){
+    limpaTela();
+    printf(RED" _    ______  ____________   ____  __________  ____  ________  __             __\n"RESET);
+    printf(RED"| |  / / __ \\/ ____/ ____/  / __ \\/ ____/ __ \\/ __ \\/ ____/ / / /      _    _/_/\n"RESET);
+    printf(RED"| | / / / / / /   / __/    / /_/ / __/ / /_/ / / / / __/ / / / /      (_)  / /  \n"RESET);
+    printf(RED"| |/ / /_/ / /___/ /___   / ____/ /___/ _, _/ /_/ / /___/ /_/ /      _    / /   \n"RESET);
+    printf(RED"|___/\\____/\\____/_____/  /_/   /_____/_/ |_/_____/_____/\\____/      (_)  / /    \n"RESET);
+    printf(RED"                                                                         |_|    \n"RESET);
+}
+void jogodassomas(){
+    printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
+    printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
+    printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\___ \\   \\___ \\| |  | | |\\/| | / /\\ \\  \\___ \\ \n"RESET);
+    printf(GREEN"| |__| | |__| | |__| | |__| | | |__| / ____ \\ ____) |  ____) | |__| | |  | |/ ____ \\ ____) |\n"RESET);
+    printf(GREEN" \\____/ \\____/ \\_____|\\____/  |_____/_/    \\_\\_____/  |_____/ \\____/|_|  |_/_/    \\_\\_____/\n\n\n\n"RESET);;
+}
+
 void menu(){
     printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
     printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
@@ -79,9 +100,6 @@ void menu(){
     printf("Digite a opcao desejada: ");
 }
 
-void limpaTela() {
-    system(CLEAR);
-}
 int leRanking() {
     FILE *fp = fopen("ranking.bin", "rb");
     if (fp == NULL) {
@@ -294,34 +312,159 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
     fclose(copia);
     fclose(original);
 }
+void verificaLinha(int linha, int somas_linhas[], int *linhaFechada) {
+    int i, soma = 0;
+    char ch;
+    FILE* arquivo = fopen("copia.txt", "r");
+    int posicaoLinha = (linha * tamanho + linha + tamanho * tamanho); // Cálculo da posição da linha no arquivo
+    for (i = 0; i < posicaoLinha; i++)
+        getc(arquivo);
+
+    for (i = 0; i < tamanho; i++) {
+        ch = getc(arquivo);
+        if (ch != ' ' && ch >= '0' && ch <= '9') {
+            soma += ch - '0'; // Converte caractere para inteiro
+        }
+    }
+    fclose(arquivo);
+
+    if (soma == somas_linhas[linha - 1] && !(*linhaFechada)) {
+        *linhaFechada = 1; // Marca a linha como fechada
+    }
+}
+
+void verificaColuna(int coluna, int somas_colunas[], int *colunaFechada) {
+    int i, soma = 0;
+    char ch;
+    FILE* arquivo = fopen("copia.txt", "r");
+    int posicaoColuna = (tamanho + 1) * tamanho + coluna; // Cálculo da posição da coluna no arquivo
+
+    for (i = 0; i < posicaoColuna; i++)
+        getc(arquivo);
+
+    for (i = 0; i < tamanho; i++) {
+        ch = getc(arquivo);
+        if (ch != ' ' && ch >= '0' && ch <= '9') {
+            soma += ch - '0'; // Converte caractere para inteiro
+        }
+    }
+    fclose(arquivo);
+
+    // Verificar se a coluna foi fechada
+    if (soma == somas_colunas[coluna] && !(*colunaFechada)) {
+        *colunaFechada = 1; // Marca a coluna como fechada
+    }
+}
+
+int calculaSomaColuna(int coluna) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
+
+    int soma = 0;
+    char valor;
+
+    // Ler a matriz e somar os valores da coluna desejada
+    for (int i = 0; i < tamanho; i++) {
+        for (int j = 0; j < tamanho; j++) {
+            valor = fgetc(arquivo);
+            if (j == coluna && valor != ' ') {
+                soma += valor - '0';  // Converte caractere para inteiro
+            }
+        }
+        fgetc(arquivo);  // Pular o caractere de nova linha
+    }
+
+    fclose(arquivo);
+    return soma;
+}
+
+int calculaSomaLinha(int linha) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
+
+    int soma = 0;
+    char valor;
+    
+    // Pular as linhas anteriores à linha desejada
+    for (int i = 0; i < linha; i++) {
+        for (int j = 0; j < tamanho; j++) {
+            fgetc(arquivo);
+        }
+        fgetc(arquivo);  // Pular o caractere de nova linha
+    }
+
+    // Ler e somar os valores da linha desejada
+    for (int j = 0; j < tamanho; j++) {
+        valor = fgetc(arquivo);
+        if (valor != ' ') {
+            soma += valor - '0';  // Converte caractere para inteiro
+        }
+    }
+
+    fclose(arquivo);
+    return soma;
+}
+
+
+void calculaSomas(int* valores_somas_linhas, int* valores_somas_colunas) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return;
+    }
+
+    char linha[50];
+    
+    // Pular a matriz (as primeiras linhas do arquivo) e chegar até as somas
+    for (int i = 0; i < tamanho; i++) {
+        fgets(linha, sizeof(linha), arquivo);  // Ler cada linha da matriz
+    }
+
+    for (int i = 0; i < tamanho; i++) {
+        valores_somas_colunas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    }
+
+    fgetc(arquivo);  
+
+    for (int i = 0; i < tamanho; i++) {
+        valores_somas_linhas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    }
+
+
+    fclose(arquivo);
+}
 
 void alteraMatriz(int linha, int coluna, int *vida)
 {
-    int i,j,k=0;
+    int i,k=0;
     FILE* matriz = fopen("copia.txt","r");
     int coord = coluna+(linha-1)*(tamanho+1);
     char errou, ch;
-    for (i=0;i<(tamanho*(tamanho+5)+2);i++)//O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
+    for (i=0;i<(tamanho*(tamanho+5)+2);i++) // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
         getc(matriz);
     for(i=0;i<coord;i++)
         errou = getc(matriz);
     fclose(matriz);
-    if (errou=='1')
-    {
-        *vida-=1;
-    }
-    else
-    {
-        FILE* velhaMatriz = fopen("copia.txt","r");
-        FILE* novaMatriz = fopen("copianova.txt","w");
-        while ((ch = fgetc(velhaMatriz)) != EOF) 
-        {
-            if(k==(coord-1))
-            {
-                fputc(' ',novaMatriz);
-            }
-            else
-            {
+
+    if (errou == '1') {
+        *vida -= 1;
+        printf("Que pena, voce " RED "ERROU" RESET "! Tecle <enter> para tentar novamente.");
+        getchar(); // Aguarda novo <enter> do usuário
+        return;
+    } else {
+        FILE* velhaMatriz = fopen("copia.txt", "r");
+        FILE* novaMatriz = fopen("copianova.txt", "w");
+
+        while ((ch = fgetc(velhaMatriz)) != EOF) {
+            if (k == (coord - 1)) {
+                fputc(' ', novaMatriz);
+            } else {
                 fputc(ch, novaMatriz);
             }
             k++;
@@ -329,14 +472,20 @@ void alteraMatriz(int linha, int coluna, int *vida)
         fclose(velhaMatriz);
         fclose(novaMatriz);
 
-        velhaMatriz = fopen("copia.txt","w");
-        novaMatriz = fopen("copianova.txt","r");
-        while ((ch = fgetc(novaMatriz)) != EOF) 
-        {
+        velhaMatriz = fopen("copia.txt", "w");
+        novaMatriz = fopen("copianova.txt", "r");
+
+        while ((ch = fgetc(novaMatriz)) != EOF) {
             fputc(ch, velhaMatriz);
         }
         fclose(velhaMatriz);
         fclose(novaMatriz);
+
+        // Exibir mensagem de acerto e esperar <enter>
+        printf("Parabens, voce " GREEN "ACERTOU" RESET "! Tecle <enter> para continuar.\n");
+        getchar(); // Captura a tecla enter
+
+
     }
 }
 
@@ -389,15 +538,17 @@ int main() {
     int index = leRanking();
     limpaTela();
     char nome[50];
-    int num, opcao, modo=1, ponto, vida=5, i; // Modo inicia automaticamente no Iniciante
+    int num, opcao, modo=1, ponto, vida=5; // Modo inicia automaticamente no Iniciante
+    int valores_somas_linhas[tamanho], valores_somas_colunas[tamanho];
 
     int linha=0, coluna=0;
     copiaMatriz(modo);
     limpaTela();
-    printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
+    jogodassomas();
+    printf("Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n");
     printf("Informe seu nickname: ");
     scanf("%s", nome); 
-    printf("teste p/ ranking. pts: ")/
+    printf("teste p/ ranking. pts: ");
     scanf("%d", &ponto);
 
     adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
@@ -416,11 +567,50 @@ int main() {
     if (num == 1) { // JOGAR
         limpaTela();//limpa a tela
         matriz(modo);
-        printf(GREEN"\n\n*** VOCE TEM ");printf(RED"%d"RESET,vida);printf(GREEN" VIDAS***\n"RESET);
-        printf("Digite a linha e coluna do elemento a ser apagado: ");
-        scanf("%d %d", &linha, &coluna);
-        alteraMatriz(linha,coluna,&vida);
-        limpaTela();
+        while (vida > 0) { // Loop de jogadas
+                printf(GREEN"\n\n*** VOCE TEM "RED"%d"GREEN" VIDAS ***\n"RESET, vida);
+                printf("Digite a linha e coluna do elemento a ser apagado: ");
+                scanf("%d %d", &linha, &coluna);
+
+                // Chama a função para alterar a matriz e atualiza as vidas
+                int vidas_anteriores = vida;
+                alteraMatriz(linha, coluna, &vida);
+                getchar();
+
+                    if (vidas_anteriores == vida) {
+                        calculaSomas(valores_somas_linhas, valores_somas_colunas);
+
+                        // Verifica se a linha foi fechada
+                        int soma_linha = calculaSomaLinha(linha - 1);
+                        if (soma_linha == valores_somas_linhas[linha - 1]) {
+                            printf(GREEN "Muito bem, voce " GREEN "fechou a linha %d! " RESET "Pressione <enter> para continuar.", linha);
+                            getchar(); // Captura a tecla enter
+                        }
+
+                        // Verifica se a coluna foi fechada
+                        int soma_coluna = calculaSomaColuna(coluna - 1);
+                        if (soma_coluna == valores_somas_colunas[coluna - 1]) {
+                            printf("Muito bem, voce " GREEN "fechou a coluna %d! " RESET "Pressione <enter> para continuar.", coluna);
+                            getchar(); // Captura a tecla enter
+                        }
+                    }
+                // Reimprime a matriz após a jogada
+                limpaTela();
+                matriz(modo); // Reimprimir a matriz atualizada
+
+                if (vida == 0) { // Se o jogador perder todas as vidas
+                vocePerdeu();
+                printf(RED "\n\n\n\nFim de jogo! Voce perdeu todas as vidas.\n" RESET);
+                printf("Pressione <enter> para tentar novamente!\n");
+                getchar();
+                limpaTela();
+                
+                // Reseta as vidas e recarrega a matriz original
+                vida = 5;
+                copiaMatriz(modo); // Restaura a matriz original
+                break; // Sai do loop de jogadas, permitindo ao jogador tentar novamente
+            }
+            }
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
         printf("\nTecle <enter> para continuar: ");
