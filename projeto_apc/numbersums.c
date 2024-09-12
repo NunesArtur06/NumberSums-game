@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int tamanho;  //tamanho da matriz
+int tamanho,nivel=1,acertos=0;  //tamanho da matriz, nivel atual, quantidade de acertos
+int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
+int inter[4] = {7,5,7,11};
+int avanc[4] = {7,5,7,11};
 char nomes[900][20]; //900 linhas de 20 caracteres cada
 int pts[900]; // lista das pontuacoes
 
@@ -482,10 +485,9 @@ void alteraMatriz(int linha, int coluna, int *vida)
         fclose(novaMatriz);
 
         // Exibir mensagem de acerto e esperar <enter>
+        acertos+=1;
         printf("Parabens, voce " GREEN "ACERTOU" RESET "! Tecle <enter> para continuar.\n");
         getchar(); // Captura a tecla enter
-
-
     }
 }
 
@@ -493,8 +495,19 @@ void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
     int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
+    int asterisco=0;
     FILE* matriz; //Variável de arquivo
     matriz= fopen("copia.txt","r");
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
+    {
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
+    }
+    asterisco=0;
 
     for(x=0;x<(tamanho * tamanho)+tamanho;x++) //pula os números internos da matriz
     {
@@ -520,6 +533,15 @@ void matriz() //Gera a matriz
 
     fclose(matriz); //fecha o arquivo
     matriz= fopen("copia.txt","r");
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
+    {
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
+    }
 
     for (x = 0; x < tamanho; x++) {
         printf("  %c%c | ", coluna[x * 2], coluna[x * 2 + 1]); // Exibe as somas das colunas à esquerda, alinhadas corretamente
@@ -596,6 +618,11 @@ int main() {
                     }
                 // Reimprime a matriz após a jogada
                 limpaTela();
+                if (acertos == ini[nivel-1]) //verifica se passou de nível
+                {
+                    nivel+=1;
+                    acertos=0;
+                }
                 matriz(modo); // Reimprimir a matriz atualizada
 
                 if (vida == 0) { // Se o jogador perder todas as vidas
