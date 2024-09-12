@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int tamanho,nivel=1,acertos=0;  //tamanho da matriz, nivel atual, quantidade de acertos
+int tamanho,nivel=1,acertos=0,asterisco=0;;  //tamanho da matriz, nivel atual, quantidade de acertos
 int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
 int inter[4] = {7,5,7,11};
 int avanc[4] = {7,5,7,11};
@@ -449,6 +449,17 @@ void alteraMatriz(int linha, int coluna, int *vida)
     FILE* matriz = fopen("copia.txt","r");
     int coord = coluna+(linha-1)*(tamanho+1);
     char errou, ch;
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
+    {
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
+    }
+    asterisco=0;
+
     for (i=0;i<(tamanho*(tamanho+5)+2);i++) // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
         getc(matriz);
     for(i=0;i<coord;i++)
@@ -463,9 +474,10 @@ void alteraMatriz(int linha, int coluna, int *vida)
     } else {
         FILE* velhaMatriz = fopen("copia.txt", "r");
         FILE* novaMatriz = fopen("copianova.txt", "w");
-
+        
+        
         while ((ch = fgetc(velhaMatriz)) != EOF) {
-            if (k == (coord - 1)) {
+            if (k == ((coord - 1)+60*(nivel-1))) {
                 fputc(' ', novaMatriz);
             } else {
                 fputc(ch, novaMatriz);
@@ -495,7 +507,6 @@ void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
     int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
-    int asterisco=0;
     FILE* matriz; //Variável de arquivo
     matriz= fopen("copia.txt","r");
 
@@ -542,6 +553,7 @@ void matriz() //Gera a matriz
             fgetc(matriz); //come enter dps do asterisco    
         }
     }
+    asterisco=0;
 
     for (x = 0; x < tamanho; x++) {
         printf("  %c%c | ", coluna[x * 2], coluna[x * 2 + 1]); // Exibe as somas das colunas à esquerda, alinhadas corretamente
