@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int tamanho,nivel=1,acertos=0;  //tamanho da matriz, nivel atual, quantidade de acertos
+
+int tamanho,nivel=1,acertos=0,asterisco=0;  //tamanho da matriz, nivel atual, quantidade de acertos, asteriscos contados
 int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
 int inter[4] = {7,5,7,11};
 int avanc[4] = {7,5,7,11};
@@ -86,7 +87,7 @@ void jogodassomas(){
     printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
     printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
     printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
-    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n\n\n\n"RESET);;
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n\n\n\n"RESET);
 }
 
 void menu(){
@@ -95,7 +96,7 @@ void menu(){
     printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
     printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
     printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
-    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n"RESET);;
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n"RESET);
     printf("\n\n\n1 - Jogar\n");
     printf("2 - Instrucoes\n");
     printf("3 - Configuracoes\n");
@@ -380,7 +381,6 @@ int calculaSomaColuna(int coluna) {
         }
         fgetc(arquivo);  // Pular o caractere de nova linha
     }
-
     fclose(arquivo);
     return soma;
 }
@@ -450,6 +450,17 @@ void alteraMatriz(int linha, int coluna, int *vida)
     FILE* matriz = fopen("copia.txt","r");
     int coord = coluna+(linha-1)*(tamanho+1);
     char errou, ch;
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
+    {
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
+    }
+    asterisco=0;
+
     for (i=0;i<(tamanho*(tamanho+5)+2);i++) // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
         getc(matriz);
     for(i=0;i<coord;i++)
@@ -464,9 +475,10 @@ void alteraMatriz(int linha, int coluna, int *vida)
     } else {
         FILE* velhaMatriz = fopen("copia.txt", "r");
         FILE* novaMatriz = fopen("copianova.txt", "w");
-
+        
+        
         while ((ch = fgetc(velhaMatriz)) != EOF) {
-            if (k == (coord - 1)) {
+            if (k == ((coord - 1)+60*(nivel-1))) {
                 fputc(' ', novaMatriz);
             } else {
                 fputc(ch, novaMatriz);
@@ -514,7 +526,6 @@ void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
     int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
-    int asterisco=0;
     FILE* matriz; //Variável de arquivo
     matriz= fopen("copia.txt","r");
 
@@ -561,6 +572,7 @@ void matriz() //Gera a matriz
             fgetc(matriz); //come enter dps do asterisco    
         }
     }
+    asterisco=0;
 
     for (x = 0; x < tamanho; x++) {
         printf("  %c%c | ", coluna[x * 2], coluna[x * 2 + 1]); // Exibe as somas das colunas à esquerda, alinhadas corretamente
@@ -579,7 +591,7 @@ int main() {
     int index = leRanking();
     limpaTela();
     char nome[50];
-    int num, opcao, modo=1, vida=5; // Modo inicia automaticamente no Iniciante
+    int num, opcao, modo=1, ponto, vida=5; // Modo inicia automaticamente no Iniciante
     int valores_somas_linhas[tamanho], valores_somas_colunas[tamanho];
 
     int linha=0, coluna=0;
@@ -588,7 +600,13 @@ int main() {
     jogodassomas();
     printf("Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n");
     printf("Informe seu nickname: ");
-    scanf("%s", nome);
+    scanf("%s", nome); 
+    printf("teste p/ ranking. pts: ");
+    scanf("%d", &ponto);
+
+    adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
+    ordenaRanking(index); // Ordena o ranking por pontuação
+    escreveRanking(index); // Escreve o ranking atualizado no arquivo binário
 
     limpaTela();
 
