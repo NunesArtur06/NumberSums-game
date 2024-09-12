@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int tamanho,nivel=1,acertos=0,asterisco=0;;  //tamanho da matriz, nivel atual, quantidade de acertos
+
+int tamanho,nivel=1,acertos=0,asterisco=0;  //tamanho da matriz, nivel atual, quantidade de acertos, asteriscos contados
 int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
 int inter[4] = {7,5,7,11};
 int avanc[4] = {7,5,7,11};
 char nomes[900][20]; //900 linhas de 20 caracteres cada
 int pts[900]; // lista das pontuacoes
+int ponto=0;
 
 #define CLEAR "cls"
 
@@ -32,29 +34,29 @@ void instructions(){
     printf("O jogo sempre comeca com 5 vidas. O objetivo do jogo eh apagar os elementos das linhas e colunas de modo que os elementos restantes na tela, uma vez somando sao exatamente os valores mostrados no topo das colunas e na frente das linhas.\n\n");
     printf(GREEN"COMO APAGAR UM ELEMENTO DA MATRIZ?\n\n"RESET); 
     printf("Para apagar um elemento o jogador deve informar a linha e a coluna do numero a ser apagado. No modo iniciante a matriz do jogo eh 4x4, no modo intermediario a matriz eh 6x6 e no modo avancado a matriz eh 7x7. Para o jogador as linhas e colunas iniciam sempre em 1. \n\n\n\n");
-    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf(GREEN"* EXEMPLO *\n\n"RESET);
     printf("      06 03 21 19\n");
     printf("     -------------\n");
     printf("  19 | 2  4  8  9 \n");
     printf("  09 | 8  7  6  3 \n");
     printf("  11 | 4  8  1  7 \n");
     printf("  10 | 2  3  7  7 \n\n");
-    printf("*** Voce tem 5 vidas ***\n");
+    printf("* Voce tem 5 vidas *\n");
     printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void res(){
-    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf(GREEN"* EXEMPLO *\n\n"RESET);
     printf("      06 03 21 19\n");
     printf("     -------------\n");
     printf("  19 | 2  4  8  9 \n");
     printf("  09 | 8  7     3 \n");
     printf("  11 | 4  8  1  7 \n");
     printf("  10 | 2  3  7  7 \n\n");
-    printf("*** Voce tem 5 vidas ***\n");
+    printf("* Voce tem 5 vidas *\n");
     printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void modo_dificuldade(){
-    printf(GREEN"*** ESCOLHA O MODO DE JOGO ***\n\n"GREEN);
+    printf(GREEN"* ESCOLHA O MODO DE JOGO *\n\n"GREEN);
     printf("1 - Iniciante\n");
     printf("2 - Intermediario\n");
     printf("3 - Avancado\n");
@@ -63,7 +65,7 @@ void modo_dificuldade(){
 }
 
 void config(){
-    printf(GREEN"*** CONFIGURACOES ***\n\n"RESET);
+    printf(GREEN"* CONFIGURACOES *\n\n"RESET);
     printf("1 - Zerar Ranking\n");
     printf("2 - Modo de Dificuldade\n");
     printf("3 - Voltar ao menu principal\n\n");
@@ -72,29 +74,29 @@ void config(){
 
 void vocePerdeu(){
     limpaTela();
-    printf(RED" _    ______  ____________   ____  __________  ____  ________  __             __\n"RESET);
-    printf(RED"| |  / / __ \\/ ____/ ____/  / __ \\/ ____/ __ \\/ __ \\/ ____/ / / /      _    _/_/\n"RESET);
-    printf(RED"| | / / / / / /   / __/    / /_/ / __/ / /_/ / / / / __/ / / / /      (_)  / /  \n"RESET);
-    printf(RED"| |/ / /_/ / /___/ /___   / ____/ /___/ _, _/ /_/ / /___/ /_/ /      _    / /   \n"RESET);
-    printf(RED"|___/\\____/\\____/_____/  /_/   /_____/_/ |_/_____/_____/\\____/      (_)  / /    \n"RESET);
+    printf(RED" _    __  ____   __  ____  __  ___  _             __\n"RESET);
+    printf(RED"| |  / / _ \\/ __/ __/  / _ \\/ _/ _ \\/ _ \\/ __/ / / /      _    _//\n"RESET);
+    printf(RED"| | / / / / / /   / _/    / // / _/ / // / / / / _/ / / / /      ()  / /  \n"RESET);
+    printf(RED"| |/ / // / /_/ /_   / __/ /_/ _, _/ // / /_/ /_/ /      _    / /   \n"RESET);
+    printf(RED"|_/\\_/\\_/__/  //   /__// |/_/_/\\_/      (_)  / /    \n"RESET);
     printf(RED"                                                                         |_|    \n"RESET);
 }
 void jogodassomas(){
-    printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
-    printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
-    printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
-    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\___ \\   \\___ \\| |  | | |\\/| | / /\\ \\  \\___ \\ \n"RESET);
-    printf(GREEN"| |__| | |__| | |__| | |__| | | |__| / ____ \\ ____) |  ____) | |__| | |  | |/ ____ \\ ____) |\n"RESET);
-    printf(GREEN" \\____/ \\____/ \\_____|\\____/  |_____/_/    \\_\\_____/  |_____/ \\____/|_|  |_/_/    \\_\\_____/\n\n\n\n"RESET);;
+    printf(GREEN"      _  __   __  __    __           __    __  __  _  _           ___ \n"RESET);
+    printf(GREEN"     | |/ _ \\ / __|/ _ \\  |  _ \\   /\\    / __|  / __|/ _ \\|  \\/  |   /\\    / __|\n"RESET);
+    printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
+    printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n\n\n\n"RESET);
 }
 
 void menu(){
-    printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
-    printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
-    printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
-    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\___ \\   \\___ \\| |  | | |\\/| | / /\\ \\  \\___ \\ \n"RESET);
-    printf(GREEN"| |__| | |__| | |__| | |__| | | |__| / ____ \\ ____) |  ____) | |__| | |  | |/ ____ \\ ____) |\n"RESET);
-    printf(GREEN" \\____/ \\____/ \\_____|\\____/  |_____/_/    \\_\\_____/  |_____/ \\____/|_|  |_/_/    \\_\\_____/\n"RESET);;
+    printf(GREEN"      _  __   __  __    __           __    __  __  _  _           ___ \n"RESET);
+    printf(GREEN"     | |/ _ \\ / __|/ _ \\  |  _ \\   /\\    / __|  / __|/ _ \\|  \\/  |   /\\    / __|\n"RESET);
+    printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
+    printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n"RESET);
     printf("\n\n\n1 - Jogar\n");
     printf("2 - Instrucoes\n");
     printf("3 - Configuracoes\n");
@@ -266,12 +268,12 @@ void AlteraRanking(char* nickname, int pontos) {
 
 void printRanking(int index) {
     if (index == 0) {
-        printf(GREEN"*** RANKING ***\n\n\n\n\n\n\n"RESET);
+        printf(GREEN"* RANKING *\n\n\n\n\n\n\n"RESET);
         printf("Nenhum jogador no ranking.\n");
         return;
     }
 
-    printf(GREEN"\n*** RANKING ***\n"RESET);
+    printf(GREEN"\n** RANKING **\n"RESET);
     for (int i = 0; i < index; i++) {
         printf("%d. %s - %d pontos\n", i + 1, nomes[i], pts[i]);
     }
@@ -379,7 +381,6 @@ int calculaSomaColuna(int coluna) {
         }
         fgetc(arquivo);  // Pular o caractere de nova linha
     }
-
     fclose(arquivo);
     return soma;
 }
@@ -502,7 +503,25 @@ void alteraMatriz(int linha, int coluna, int *vida)
         getchar(); // Captura a tecla enter
     }
 }
+int checkWin(int *valores_somas_linhas, int *valores_somas_colunas, int modo) {
+    int i;
 
+    for (i = 0; i < tamanho; i++) {
+        if (calculaSomaLinha(i) != valores_somas_linhas[i]) {
+            return 0; // Se alguma linha não estiver correta, retorna 0
+        }
+    }
+
+    for (i = 0; i < tamanho; i++) {
+        if (calculaSomaColuna(i) != valores_somas_colunas[i]) {
+            return 0; // Se alguma coluna não estiver correta, retorna 0
+        }
+    }
+
+
+
+    return 1; // Venceu
+}
 void matriz() //Gera a matriz
 {
     int x=0,y=0; //Variáveis de controle
@@ -602,7 +621,7 @@ int main() {
         limpaTela();//limpa a tela
         matriz(modo);
         while (vida > 0) { // Loop de jogadas
-                printf(GREEN"\n\n*** VOCE TEM "RED"%d"GREEN" VIDAS ***\n"RESET, vida);
+                printf(GREEN"\n\n** VOCE TEM "RED"%d"GREEN" VIDAS **\n"RESET, vida);
                 printf("Digite a linha e coluna do elemento a ser apagado: ");
                 scanf("%d %d", &linha, &coluna);
 
@@ -613,12 +632,30 @@ int main() {
 
                     if (vidas_anteriores == vida) {
                         calculaSomas(valores_somas_linhas, valores_somas_colunas);
+                         if (checkWin(valores_somas_linhas, valores_somas_colunas, modo)) {
+                            if(modo == 1){
+                                ponto+=50;
+                            }else if(modo == 2){
+                                ponto+=100;
+                            }else if(modo == 3){
+                                ponto+=200;
+                            }
+                            adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
+                            ordenaRanking(index); // Ordena o ranking por pontuação
+                            escreveRanking(index); // Escreve o ranking atualizado no arquivo binário
+                            printf(GREEN "Parabens! "RESET" Voce venceu o jogo! Pressione <enter> para continuar." RESET);
+                            getchar();
+                            limpaTela();
+                            break;
+                        }
 
                         // Verifica se a linha foi fechada
                         int soma_linha = calculaSomaLinha(linha - 1);
                         if (soma_linha == valores_somas_linhas[linha - 1]) {
                             printf(GREEN "Muito bem, voce " GREEN "fechou a linha %d! " RESET "Pressione <enter> para continuar.", linha);
                             getchar(); // Captura a tecla enter
+                           
+                            
                         }
 
                         // Verifica se a coluna foi fechada
@@ -626,7 +663,11 @@ int main() {
                         if (soma_coluna == valores_somas_colunas[coluna - 1]) {
                             printf("Muito bem, voce " GREEN "fechou a coluna %d! " RESET "Pressione <enter> para continuar.", coluna);
                             getchar(); // Captura a tecla enter
+
+                            
                         }
+                         
+                        
                     }
                 // Reimprime a matriz após a jogada
                 limpaTela();
@@ -668,7 +709,7 @@ int main() {
 
             if (opcao == 1) { // ZERAR RANKING
                 limpaTela();
-                printf(GREEN"*** RANKING ***\n\n\n\n\n"RESET);
+                printf(GREEN"* RANKING *\n\n\n\n\n"RESET);
                 LimpaRanking();
                 getchar();  // Esperar pelo Enter para voltar ao submenu de configurações
                 limpaTela();
