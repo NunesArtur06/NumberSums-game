@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+int tamanho,nivel=1,acertos=0;  //tamanho da matriz, nivel atual, quantidade de acertos
+int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
+int inter[4] = {7,5,7,11};
+int avanc[4] = {7,5,7,11};
+char nomes[900][20]; //900 linhas de 20 caracteres cada
+int pts[900]; // lista das pontuacoes
+int ponto=0;
 
 #define CLEAR "cls"
 
@@ -18,57 +24,78 @@
 //Cria a variável de arquivo "ranking"
 FILE* ranking;
 
+void limpaTela() {
+    system(CLEAR);
+}
 void instructions(){
     printf(GREEN"INSTRUCOES SOBRE O JOGO DAS SOMAS: \n\n"RESET);
     printf(GREEN"Objetivo do jogo: \n\n"RESET);
     printf("O jogo sempre comeca com 5 vidas. O objetivo do jogo eh apagar os elementos das linhas e colunas de modo que os elementos restantes na tela, uma vez somando sao exatamente os valores mostrados no topo das colunas e na frente das linhas.\n\n");
     printf(GREEN"COMO APAGAR UM ELEMENTO DA MATRIZ?\n\n"RESET); 
     printf("Para apagar um elemento o jogador deve informar a linha e a coluna do numero a ser apagado. No modo iniciante a matriz do jogo eh 4x4, no modo intermediario a matriz eh 6x6 e no modo avancado a matriz eh 7x7. Para o jogador as linhas e colunas iniciam sempre em 1. \n\n\n\n");
-    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf(GREEN"* EXEMPLO *\n\n"RESET);
     printf("      06 03 21 19\n");
     printf("     -------------\n");
     printf("  19 | 2  4  8  9 \n");
     printf("  09 | 8  7  6  3 \n");
     printf("  11 | 4  8  1  7 \n");
     printf("  10 | 2  3  7  7 \n\n");
-    printf("*** Voce tem 5 vidas ***\n");
+    printf("* Voce tem 5 vidas *\n");
     printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void res(){
-    printf(GREEN"*** EXEMPLO ***\n\n"RESET);
+    printf(GREEN"* EXEMPLO *\n\n"RESET);
     printf("      06 03 21 19\n");
     printf("     -------------\n");
     printf("  19 | 2  4  8  9 \n");
     printf("  09 | 8  7     3 \n");
     printf("  11 | 4  8  1  7 \n");
     printf("  10 | 2  3  7  7 \n\n");
-    printf("*** Voce tem 5 vidas ***\n");
+    printf("* Voce tem 5 vidas *\n");
     printf("Digite linha e coluna do elemento a ser apagado: 2 3\n");
 }
 void modo_dificuldade(){
-    printf("* ESCOLHA O MODO DE JOGO *\n\n");
-    printf(CYAN"1 - Iniciante\n"RESET);
-    printf(YELLOW"2 - Intermediario\n"RESET);
-    printf(RED"3 - Avancado\n"RESET);
+    printf(GREEN"* ESCOLHA O MODO DE JOGO *\n\n"GREEN);
+    printf("1 - Iniciante\n");
+    printf("2 - Intermediario\n");
+    printf("3 - Avancado\n");
     printf("4 - Retornar\n\n");
     printf("Digite a opcao desejada: ");
 }
 
 void config(){
-    printf("* CONFIGURACOES *\n\n");
+    printf(GREEN"* CONFIGURACOES *\n\n"RESET);
     printf("1 - Zerar Ranking\n");
     printf("2 - Modo de Dificuldade\n");
     printf("3 - Voltar ao menu principal\n\n");
     printf("Digite a opcao desejada: ");
 }
 
+void vocePerdeu(){
+    limpaTela();
+    printf(RED" _    __  ____   __  ____  __  ___  _             __\n"RESET);
+    printf(RED"| |  / / _ \\/ __/ __/  / _ \\/ _/ _ \\/ _ \\/ __/ / / /      _    _//\n"RESET);
+    printf(RED"| | / / / / / /   / _/    / // / _/ / // / / / / _/ / / / /      ()  / /  \n"RESET);
+    printf(RED"| |/ / // / /_/ /_   / __/ /_/ _, _/ // / /_/ /_/ /      _    / /   \n"RESET);
+    printf(RED"|_/\\_/\\_/__/  //   /__// |/_/_/\\_/      (_)  / /    \n"RESET);
+    printf(RED"                                                                         |_|    \n"RESET);
+}
+void jogodassomas(){
+    printf(GREEN"      _  __   __  __    __           __    __  __  _  _           ___ \n"RESET);
+    printf(GREEN"     | |/ _ \\ / __|/ _ \\  |  _ \\   /\\    / __|  / __|/ _ \\|  \\/  |   /\\    / __|\n"RESET);
+    printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
+    printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n\n\n\n"RESET);;
+}
+
 void menu(){
-    printf(GREEN"      _  ____   _____  ____    _____           _____    _____  ____  __  __           _____ \n"RESET);
-    printf(GREEN"     | |/ __ \\ / ____|/ __ \\  |  __ \\   /\\    / ____|  / ____|/ __ \\|  \\/  |   /\\    / ____|\n"RESET);
-    printf(GREEN"     | | |  | | |  __| |  | | | |  | | /  \\  | (___   | (___ | |  | | \\  / |  /  \\  | (___  \n"RESET);
-    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\___ \\   \\___ \\| |  | | |\\/| | / /\\ \\  \\___ \\ \n"RESET);
-    printf(GREEN"| |__| | |__| | |__| | |__| | | |__| / ____ \\ ____) |  ____) | |__| | |  | |/ ____ \\ ____) |\n"RESET);
-    printf(GREEN" \\____/ \\____/ \\_____|\\____/  |_____/_/    \\_\\_____/  |_____/ \\____/|_|  |_/_/    \\_\\_____/\n"RESET);;
+    printf(GREEN"      _  __   __  __    __           __    __  __  _  _           ___ \n"RESET);
+    printf(GREEN"     | |/ _ \\ / __|/ _ \\  |  _ \\   /\\    / __|  / __|/ _ \\|  \\/  |   /\\    / __|\n"RESET);
+    printf(GREEN"     | | |  | | |  _| |  | | | |  | | /  \\  | (_   | (_ | |  | | \\  / |  /  \\  | (__  \n"RESET);
+    printf(GREEN" _   | | |  | | | |_ | |  | | | |  | |/ /\\ \\  \\_ \\   \\_ \\| |  | | |\\/| | / /\\ \\  \\_ \\ \n"RESET);
+    printf(GREEN"| |_| | || | || | || | | || / __ \\ __) |  __) | || | |  | |/ __ \\ ___) |\n"RESET);
+    printf(GREEN" \\_/ \\_/ \\__|\\_/  |__//    \\\\_/  |_/ \\_/||  |//    \\\\___/\n"RESET);;
     printf("\n\n\n1 - Jogar\n");
     printf("2 - Instrucoes\n");
     printf("3 - Configuracoes\n");
@@ -77,8 +104,78 @@ void menu(){
     printf("Digite a opcao desejada: ");
 }
 
-void limpaTela() {
-    system(CLEAR);
+int leRanking() {
+    FILE *fp = fopen("ranking.bin", "rb");
+    if (fp == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return 0;
+    }
+
+    int index = 0;
+    struct dados {
+        int pontuacao;
+        char nome[20];
+    };
+    struct dados jogador;
+    
+    while (fread(&jogador, sizeof(jogador), 1, fp)) {
+        strcpy(nomes[index], jogador.nome); // Copia o nome para o array de nomes
+        pts[index] = jogador.pontuacao;     // Copia a pontuação para o array de pontuações
+        index++;
+    }
+    
+    fclose(fp);
+    return index; // Retorna o tamanho do ranking
+}
+
+// Função para escrever o ranking atualizado no arquivo binário
+void escreveRanking(int index) {
+    FILE *fp = fopen("ranking.bin", "wb");
+    if (fp == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        return;
+    }
+
+    struct dados {
+        int pontuacao;
+        char nome[20];
+    };
+    struct dados jogador;
+    
+    for (int i = 0; i < index; i++) {
+        jogador.pontuacao = pts[i];
+        strcpy(jogador.nome, nomes[i]);
+        fwrite(&jogador, sizeof(jogador), 1, fp); // Escreve o jogador no arquivo
+    }
+    
+    fclose(fp);
+}
+
+// Função para adicionar um novo jogador ao ranking
+void adicionaJogador(int *index, char *novoNome, int novaPontuacao) {
+    strcpy(nomes[*index], novoNome); // Adiciona o nome no array de nomes
+    pts[*index] = novaPontuacao;     // Adiciona a pontuação no array de pontuações
+    (*index)++;                      // Incrementa o tamanho do ranking
+}
+
+// Função para ordenar o ranking por pontuação (Bubble Sort)
+void ordenaRanking(int index) {
+    for (int i = 0; i < index - 1; i++) {
+        for (int j = 0; j < index - i - 1; j++) {
+            if (pts[j] < pts[j + 1]) { // Ordena em ordem decrescente
+                // Troca pontuação
+                int tempPts = pts[j];
+                pts[j] = pts[j + 1];
+                pts[j + 1] = tempPts;
+                
+                // Troca nomes
+                char tempNome[20];
+                strcpy(tempNome, nomes[j]);
+                strcpy(nomes[j], nomes[j + 1]);
+                strcpy(nomes[j + 1], tempNome);
+            }
+        }
+    }
 }
 
 void AlteraRanking(char* nickname, int pontos) {
@@ -88,7 +185,7 @@ void AlteraRanking(char* nickname, int pontos) {
     int encontrou = 0;
 
     // Abrir o arquivo ranking.txt para leitura
-    FILE *ranking = fopen("ranking.txt", "r");
+    FILE *ranking = fopen("ranking.txt", "rb");
     FILE *temp = fopen("temp.txt", "w");  // Arquivo temporário para armazenar o ranking atualizado
 
     // Se o arquivo não for encontrado, printa uma mensagem de erro
@@ -118,8 +215,8 @@ void AlteraRanking(char* nickname, int pontos) {
     fclose(temp);
 
     // Reabrir o arquivo temporário para leitura e o ranking.txt para escrita
-    temp = fopen("temp.txt", "r");
-    ranking = fopen("ranking.txt", "w");
+    temp = fopen("temp.bin", "rb");
+    ranking = fopen("ranking.bin", "wb");
 
     if (ranking == NULL || temp == NULL) {
         perror("Impossível encontrar arquivo");
@@ -165,28 +262,24 @@ void AlteraRanking(char* nickname, int pontos) {
     fclose(temp);
 
     // Remove o arquivo temporário
-    remove("temp.txt");
+    remove("temp.bin");
 }
 
+void printRanking(int index) {
+    if (index == 0) {
+        printf(GREEN"* RANKING *\n\n\n\n\n\n\n"RESET);
+        printf("Nenhum jogador no ranking.\n");
+        return;
+    }
 
-void MostraRanking()
-{
-    printf("* RANKING *\n\n");
-    char letra; //Armazena um caractere do ranking
-
-    ranking = fopen("ranking.txt","r"); //Abre o arquivo como "r", para ser lido
-    if (ranking == NULL)
-        perror("Impossivel encontrar arquivo");
-    
-    while((letra=fgetc(ranking))!=EOF) //Pega um caractere do ranking enquanto o arquivo não acabar
-                                       //Automaticamente passa para o próximo caractere
-        putchar(letra); //Printa o caractere
-
-    fclose(ranking);
+    printf(GREEN"\n** RANKING **\n"RESET);
+    for (int i = 0; i < index; i++) {
+        printf("%d. %s - %d pontos\n", i + 1, nomes[i], pts[i]);
+    }
 }
 
 void LimpaRanking() {
-    FILE *ranking = fopen("ranking.txt", "w");  // Abre o arquivo em modo "w", o que limpa o conteúdo
+    FILE *ranking = fopen("ranking.bin", "w");  // Abre o arquivo em modo "wb", o que limpa o conteúdo
 
     // Se o arquivo não puder ser aberto, imprime uma mensagem de erro
     if (ranking == NULL) {
@@ -197,35 +290,243 @@ void LimpaRanking() {
     // Fecha o arquivo após limpar (escrever nada nele)
     fclose(ranking);
 
-    printf("Ranking limpo com sucesso!\n");
+    printf(GREEN"Ranking limpo com sucesso!\n"RESET);
     printf("\nTecle <enter> para voltar.");
 }
-
-void matriz(int dificuldade) //Gera a matriz
+void copiaMatriz(int dificuldade) //clona o arquivo escolhido
 {
-
-
-    int x=0,y=0; //Variáveis de controle
-    int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
-    int tamanho = 0; //tamanho da matriz
-    FILE* matriz; //Variável de arquivo
+    FILE* copia = fopen("copia.txt","w");
+    FILE* original;
+    char chr;
 
     switch (dificuldade) //Busca a dificuldade selecionada
     {
-        case 1: 
-            matriz= fopen("iniciante.txt","r");
-            tamanho = 4; //iniciante (4x4)
-            break;
-        case 2: 
-            matriz= fopen("intermediario.txt","r"); 
-            tamanho = 6; //iniciante (6x6)
-            break;
-        case 3: 
-            matriz= fopen("avancado.txt","r"); 
-            tamanho = 7; //iniciante (7x7)
-            break;
+        case 1: original= fopen("iniciante.txt","r");
+        tamanho = 4; break;
+        case 2: original= fopen("intermediario.txt","r");
+        tamanho = 6;  break;
+        case 3: original= fopen("avancado.txt","r");
+        tamanho = 7; break;
         default: printf(RED"Dificuldade nao selecionada"RESET); return;
     }
+    while ((chr=fgetc(original))!=EOF)
+    {
+        fprintf(copia,"%c",chr);
+    }
+    fclose(copia);
+    fclose(original);
+}
+void verificaLinha(int linha, int somas_linhas[], int *linhaFechada) {
+    int i, soma = 0;
+    char ch;
+    FILE* arquivo = fopen("copia.txt", "r");
+    int posicaoLinha = (linha * tamanho + linha + tamanho * tamanho); // Cálculo da posição da linha no arquivo
+    for (i = 0; i < posicaoLinha; i++)
+        getc(arquivo);
+
+    for (i = 0; i < tamanho; i++) {
+        ch = getc(arquivo);
+        if (ch != ' ' && ch >= '0' && ch <= '9') {
+            soma += ch - '0'; // Converte caractere para inteiro
+        }
+    }
+    fclose(arquivo);
+
+    if (soma == somas_linhas[linha - 1] && !(*linhaFechada)) {
+        *linhaFechada = 1; // Marca a linha como fechada
+    }
+}
+
+void verificaColuna(int coluna, int somas_colunas[], int *colunaFechada) {
+    int i, soma = 0;
+    char ch;
+    FILE* arquivo = fopen("copia.txt", "r");
+    int posicaoColuna = (tamanho + 1) * tamanho + coluna; // Cálculo da posição da coluna no arquivo
+
+    for (i = 0; i < posicaoColuna; i++)
+        getc(arquivo);
+
+    for (i = 0; i < tamanho; i++) {
+        ch = getc(arquivo);
+        if (ch != ' ' && ch >= '0' && ch <= '9') {
+            soma += ch - '0'; // Converte caractere para inteiro
+        }
+    }
+    fclose(arquivo);
+
+    // Verificar se a coluna foi fechada
+    if (soma == somas_colunas[coluna] && !(*colunaFechada)) {
+        *colunaFechada = 1; // Marca a coluna como fechada
+    }
+}
+
+int calculaSomaColuna(int coluna) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
+
+    int soma = 0;
+    char valor;
+
+    // Ler a matriz e somar os valores da coluna desejada
+    for (int i = 0; i < tamanho; i++) {
+        for (int j = 0; j < tamanho; j++) {
+            valor = fgetc(arquivo);
+            if (j == coluna && valor != ' ') {
+                soma += valor - '0';  // Converte caractere para inteiro
+            }
+        }
+        fgetc(arquivo);  // Pular o caractere de nova linha
+    }
+
+    fclose(arquivo);
+    return soma;
+}
+
+int calculaSomaLinha(int linha) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
+
+    int soma = 0;
+    char valor;
+    
+    // Pular as linhas anteriores à linha desejada
+    for (int i = 0; i < linha; i++) {
+        for (int j = 0; j < tamanho; j++) {
+            fgetc(arquivo);
+        }
+        fgetc(arquivo);  // Pular o caractere de nova linha
+    }
+
+    // Ler e somar os valores da linha desejada
+    for (int j = 0; j < tamanho; j++) {
+        valor = fgetc(arquivo);
+        if (valor != ' ') {
+            soma += valor - '0';  // Converte caractere para inteiro
+        }
+    }
+
+    fclose(arquivo);
+    return soma;
+}
+
+
+void calculaSomas(int* valores_somas_linhas, int* valores_somas_colunas) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return;
+    }
+
+    char linha[50];
+    
+    // Pular a matriz (as primeiras linhas do arquivo) e chegar até as somas
+    for (int i = 0; i < tamanho; i++) {
+        fgets(linha, sizeof(linha), arquivo);  // Ler cada linha da matriz
+    }
+
+    for (int i = 0; i < tamanho; i++) {
+        valores_somas_colunas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    }
+
+    fgetc(arquivo);  
+
+    for (int i = 0; i < tamanho; i++) {
+        valores_somas_linhas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    }
+
+
+    fclose(arquivo);
+}
+
+void alteraMatriz(int linha, int coluna, int *vida)
+{
+    int i,k=0;
+    FILE* matriz = fopen("copia.txt","r");
+    int coord = coluna+(linha-1)*(tamanho+1);
+    char errou, ch;
+    for (i=0;i<(tamanho*(tamanho+5)+2);i++) // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
+        getc(matriz);
+    for(i=0;i<coord;i++)
+        errou = getc(matriz);
+    fclose(matriz);
+
+    if (errou == '1') {
+        *vida -= 1;
+        printf("Que pena, voce " RED "ERROU" RESET "! Tecle <enter> para tentar novamente.");
+        getchar(); // Aguarda novo <enter> do usuário
+        return;
+    } else {
+        FILE* velhaMatriz = fopen("copia.txt", "r");
+        FILE* novaMatriz = fopen("copianova.txt", "w");
+
+        while ((ch = fgetc(velhaMatriz)) != EOF) {
+            if (k == (coord - 1)) {
+                fputc(' ', novaMatriz);
+            } else {
+                fputc(ch, novaMatriz);
+            }
+            k++;
+        }
+        fclose(velhaMatriz);
+        fclose(novaMatriz);
+
+        velhaMatriz = fopen("copia.txt", "w");
+        novaMatriz = fopen("copianova.txt", "r");
+
+        while ((ch = fgetc(novaMatriz)) != EOF) {
+            fputc(ch, velhaMatriz);
+        }
+        fclose(velhaMatriz);
+        fclose(novaMatriz);
+
+        // Exibir mensagem de acerto e esperar <enter>
+        acertos+=1;
+        printf("Parabens, voce " GREEN "ACERTOU" RESET "! Tecle <enter> para continuar.\n");
+        getchar(); // Captura a tecla enter
+    }
+}
+int checkWin(int *valores_somas_linhas, int *valores_somas_colunas, int modo) {
+    int i;
+
+    for (i = 0; i < tamanho; i++) {
+        if (calculaSomaLinha(i) != valores_somas_linhas[i]) {
+            return 0; // Se alguma linha não estiver correta, retorna 0
+        }
+    }
+
+    for (i = 0; i < tamanho; i++) {
+        if (calculaSomaColuna(i) != valores_somas_colunas[i]) {
+            return 0; // Se alguma coluna não estiver correta, retorna 0
+        }
+    }
+
+
+
+    return 1; // Venceu
+}
+void matriz() //Gera a matriz
+{
+    int x=0,y=0; //Variáveis de controle
+    int coluna[14]; //Armazena os valores das somas da coluna (maximo de 7x2 = 14 para 7x7)
+    int asterisco=0;
+    FILE* matriz; //Variável de arquivo
+    matriz= fopen("copia.txt","r");
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
+    {
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
+    }
+    asterisco=0;
 
     for(x=0;x<(tamanho * tamanho)+tamanho;x++) //pula os números internos da matriz
     {
@@ -250,12 +551,15 @@ void matriz(int dificuldade) //Gera a matriz
     printf("\n");
 
     fclose(matriz); //fecha o arquivo
-    switch (dificuldade) //Reabre o arquivo para printar a matriz
+    matriz= fopen("copia.txt","r");
+
+    while(asterisco!=(nivel-1)) //seleciona o nivel usando o asterisco como separador
     {
-        case 1: matriz= fopen("iniciante.txt","r"); break;
-        case 2: matriz= fopen("intermediario.txt","r"); break;
-        case 3: matriz= fopen("avancado.txt","r"); break;
-        default: return;
+        if (fgetc(matriz)=='*')
+        {
+            asterisco+=1;
+            fgetc(matriz); //come enter dps do asterisco    
+        }
     }
 
     for (x = 0; x < tamanho; x++) {
@@ -270,20 +574,21 @@ void matriz(int dificuldade) //Gera a matriz
 
     return;
 }
-   
-
-
 
 int main() {
-    char nickname[50];
-    int num, opcao, modo = 1; // Modo inicia automaticamente no Iniciante
+    int index = leRanking();
+    limpaTela();
+    char nome[50];
+    int num, opcao, modo=1, vida=5; // Modo inicia automaticamente no Iniciante
+    int valores_somas_linhas[tamanho], valores_somas_colunas[tamanho];
 
     int linha=0, coluna=0;
-
+    copiaMatriz(modo);
     limpaTela();
-    printf(GREEN"Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n"RESET);
+    jogodassomas();
+    printf("Bem vindo(a) ao Jogo das Somas de APC!!!!\n\n");
     printf("Informe seu nickname: ");
-    scanf("%s", nickname); 
+    scanf("%s", nome);
 
     limpaTela();
 
@@ -297,10 +602,77 @@ int main() {
     if (num == 1) { // JOGAR
         limpaTela();//limpa a tela
         matriz(modo);
-        printf(GREEN"\n\n*** VOCE TEM 5 VIDAS ***\n"RESET);
-        printf("Digite a linha e coluna do elemento a ser apagado: ");
-        scanf("%d %d", &linha, &coluna);
-        limpaTela();
+        while (vida > 0) { // Loop de jogadas
+                printf(GREEN"\n\n** VOCE TEM "RED"%d"GREEN" VIDAS **\n"RESET, vida);
+                printf("Digite a linha e coluna do elemento a ser apagado: ");
+                scanf("%d %d", &linha, &coluna);
+
+                // Chama a função para alterar a matriz e atualiza as vidas
+                int vidas_anteriores = vida;
+                alteraMatriz(linha, coluna, &vida);
+                getchar();
+
+                    if (vidas_anteriores == vida) {
+                        calculaSomas(valores_somas_linhas, valores_somas_colunas);
+                         if (checkWin(valores_somas_linhas, valores_somas_colunas, modo)) {
+                            if(modo == 1){
+                                ponto+=50;
+                            }else if(modo == 2){
+                                ponto+=100;
+                            }else if(modo == 3){
+                                ponto+=200;
+                            }
+                            adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
+                            ordenaRanking(index); // Ordena o ranking por pontuação
+                            escreveRanking(index); // Escreve o ranking atualizado no arquivo binário
+                            printf(GREEN "Parabens! "RESET" Voce venceu o jogo! Pressione <enter> para continuar." RESET);
+                            getchar();
+                            limpaTela();
+                            break;
+                        }
+
+                        // Verifica se a linha foi fechada
+                        int soma_linha = calculaSomaLinha(linha - 1);
+                        if (soma_linha == valores_somas_linhas[linha - 1]) {
+                            printf(GREEN "Muito bem, voce " GREEN "fechou a linha %d! " RESET "Pressione <enter> para continuar.", linha);
+                            getchar(); // Captura a tecla enter
+                           
+                            
+                        }
+
+                        // Verifica se a coluna foi fechada
+                        int soma_coluna = calculaSomaColuna(coluna - 1);
+                        if (soma_coluna == valores_somas_colunas[coluna - 1]) {
+                            printf("Muito bem, voce " GREEN "fechou a coluna %d! " RESET "Pressione <enter> para continuar.", coluna);
+                            getchar(); // Captura a tecla enter
+
+                            
+                        }
+                         
+                        
+                    }
+                // Reimprime a matriz após a jogada
+                limpaTela();
+                if (acertos == ini[nivel-1]) //verifica se passou de nível
+                {
+                    nivel+=1;
+                    acertos=0;
+                }
+                matriz(modo); // Reimprimir a matriz atualizada
+
+                if (vida == 0) { // Se o jogador perder todas as vidas
+                vocePerdeu();
+                printf(RED "\n\n\n\nFim de jogo! Voce perdeu todas as vidas.\n" RESET);
+                printf("Pressione <enter> para tentar novamente!\n");
+                getchar();
+                limpaTela();
+                
+                // Reseta as vidas e recarrega a matriz original
+                vida = 5;
+                copiaMatriz(modo); // Restaura a matriz original
+                break; // Sai do loop de jogadas, permitindo ao jogador tentar novamente
+            }
+            }
     } else if (num == 2) { // INSTRUÇÕES
         instructions();
         printf("\nTecle <enter> para continuar: ");
@@ -319,7 +691,7 @@ int main() {
 
             if (opcao == 1) { // ZERAR RANKING
                 limpaTela();
-                printf("* RANKING *\n\n\n\n\n");
+                printf(GREEN"* RANKING *\n\n\n\n\n"RESET);
                 LimpaRanking();
                 getchar();  // Esperar pelo Enter para voltar ao submenu de configurações
                 limpaTela();
@@ -331,16 +703,19 @@ int main() {
 
                 if (modo == 1) { // MODO INICIANTE
                     limpaTela();
-                    printf(CYAN"MODO INICIANTE SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO INICIANTE SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 2) { // MODO INTERMEDIÁRIO
                     limpaTela();
-                    printf(YELLOW"MODO INTERMEDIARIO SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO INTERMEDIARIO SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else if (modo == 3) { // MODO AVANÇADO
                     limpaTela();
-                    printf(RED"MODO AVANCADO SELECIONADO\n"RESET);
-                    printf("\n\n\nPressione <enter> para voltar: ");
+                    printf(GREEN"MODO AVANCADO SELECIONADO\n"RESET);
+                    copiaMatriz(modo);
+                    printf("\n\n\n\n\nPressione <enter> para voltar: ");
                 } else {
                     limpaTela();
                     continue; // Voltar ao submenu de configurações
@@ -355,7 +730,8 @@ int main() {
             }
         }
     } else if (num == 4) { // RANKING
-        MostraRanking();
+        index = leRanking();
+        printRanking(index);
         printf("\nTecle <enter> para voltar ao menu principal: ");
         getchar();  // Esperar pelo Enter para voltar ao menu principal
         limpaTela();
