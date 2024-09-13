@@ -2,15 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 int tamanho,nivel=1,acertos=0;  //tamanho da matriz, nivel atual, quantidade de acertos
-int ini[4] = {7,5,7,11}; //quantidade de acertos pra passar de nível
-int inter[4] = {7,5,7,11};
-int avanc[4] = {7,5,7,11};
 char nomes[900][20]; //900 linhas de 20 caracteres cada
 int pts[900]; // lista das pontuacoes
 int ponto=0;
 
 #define CLEAR "cls"
-
         //Cores//
 #define RED     "\x1b[31m"
 #define GREEN   "\x1b[32m"
@@ -326,144 +322,137 @@ void copiaMatriz(int dificuldade) //clona o arquivo escolhido
     fclose(copia);
     fclose(original);
 }
-void verificaLinha(int linha, int somas_linhas[], int *linhaFechada) {
-    int i, soma = 0;
-    char ch;
+
+int calculaSomaColuna(int coluna, int modo) {
     FILE* arquivo = fopen("copia.txt", "r");
-    int posicaoLinha = (linha * tamanho + linha + tamanho * tamanho); // Cálculo da posição da linha no arquivo
-    for (i = 0; i < posicaoLinha; i++)
-        getc(arquivo);
-
-    for (i = 0; i < tamanho; i++) {
-        ch = getc(arquivo);
-        if (ch != ' ' && ch >= '0' && ch <= '9') {
-            soma += ch - '0'; // Converte caractere para inteiro
-        }
-    }
-    fclose(arquivo);
-
-    if (soma == somas_linhas[linha - 1] && !(*linhaFechada)) {
-        *linhaFechada = 1; // Marca a linha como fechada
-    }
-}
-
-void verificaColuna(int coluna, int somas_colunas[], int *colunaFechada) {
-    int i, soma = 0;
-    char ch;
-    FILE* arquivo = fopen("copia.txt", "r");
-    int posicaoColuna = (tamanho + 1) * tamanho + coluna; // Cálculo da posição da coluna no arquivo
-
-    for (i = 0; i < posicaoColuna; i++)
-        getc(arquivo);
-
-    for (i = 0; i < tamanho; i++) {
-        ch = getc(arquivo);
-        if (ch != ' ' && ch >= '0' && ch <= '9') {
-            soma += ch - '0'; // Converte caractere para inteiro
-        }
-    }
-    fclose(arquivo);
-
-    // Verificar se a coluna foi fechada
-    if (soma == somas_colunas[coluna] && !(*colunaFechada)) {
-        *colunaFechada = 1; // Marca a coluna como fechada
-    }
-}
-
-int calculaSomaColuna(int coluna) {
-    FILE* arquivo = fopen("copia.txt", "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 0;
-    }
-
-    int soma = 0;
-    char valor;
-
-    // Ler a matriz e somar os valores da coluna desejada
-    for (int i = 0; i < tamanho; i++) {
-        for (int j = 0; j < tamanho; j++) {
-            valor = fgetc(arquivo);
-            if (j == coluna && valor != ' ') {
-                soma += valor - '0';  // Converte caractere para inteiro
-            }
-        }
-        fgetc(arquivo);  // Pular o caractere de nova linha
-    }
-
-    fclose(arquivo);
-    return soma;
-}
-
-int calculaSomaLinha(int linha) {
-    FILE* arquivo = fopen("copia.txt", "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 0;
-    }
-
-    int soma = 0;
-    char valor;
     
-    // Pular as linhas anteriores à linha desejada
-    for (int i = 0; i < linha; i++) {
-        for (int j = 0; j < tamanho; j++) {
-            fgetc(arquivo);
-        }
-        fgetc(arquivo);  // Pular o caractere de nova linha
+    for (int i = 0; i < nivel-1; i++){
+       while (fgetc(arquivo) != '*'){};
+       fgetc(arquivo);
     }
 
-    // Ler e somar os valores da linha desejada
-    for (int j = 0; j < tamanho; j++) {
-        valor = fgetc(arquivo);
-        if (valor != ' ') {
-            soma += valor - '0';  // Converte caractere para inteiro
+    int size;
+
+    if (modo == 1){size = 4;}
+    else if (modo == 2){size = 6;}
+    else if (modo == 3){size = 7;}
+
+    int matrizAtual[size][size];
+    int matrizReferencia[size][size];
+
+
+    for (int i = 0; i < nivel-1; i++){
+        while (fgetc(arquivo) != '*'){}
+        fgetc(arquivo);
+    }
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizAtual[i][ii] = fgetc(arquivo);
         }
+        fgetc(arquivo);
+    }
+
+    while (fgetc(arquivo) != '\n'){}
+    while (fgetc(arquivo) != '\n'){}
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizReferencia[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
     }
 
     fclose(arquivo);
-    return soma;
+
+    for (int i = 0; i < size; i++){
+        if (matrizReferencia[i][coluna-1] == '0' && matrizAtual[i][coluna-1] != ' '){
+            return 0; // não fechou a linha
+        }
+    }
+
+    return 1;
 }
 
-
-void calculaSomas(int* valores_somas_linhas, int* valores_somas_colunas) {
+int calculaSomaLinha(int linha, int modo) {
     FILE* arquivo = fopen("copia.txt", "r");
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return;
-    }
-
-    char linha[50];
     
-    // Pular a matriz (as primeiras linhas do arquivo) e chegar até as somas
-    for (int i = 0; i < tamanho; i++) {
-        fgets(linha, sizeof(linha), arquivo);  // Ler cada linha da matriz
+    for (int i = 0; i < nivel-1; i++){
+       while (fgetc(arquivo) != '*'){};
+       fgetc(arquivo);
     }
 
-    for (int i = 0; i < tamanho; i++) {
-        valores_somas_colunas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    int size;
+
+    if (modo == 1){size = 4;}
+    else if (modo == 2){size = 6;}
+    else if (modo == 3){size = 7;}
+
+    int matrizAtual[size][size];
+    int matrizReferencia[size][size];
+
+
+    for (int i = 0; i < nivel-1; i++){
+        while (fgetc(arquivo) != '*'){}
+        fgetc(arquivo);
     }
 
-    fgetc(arquivo);  
-
-    for (int i = 0; i < tamanho; i++) {
-        valores_somas_linhas[i] = (fgetc(arquivo) - '0') * 10 + (fgetc(arquivo) - '0');  // Lê duas colunas por vez
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizAtual[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
     }
 
+    while (fgetc(arquivo) != '\n'){}
+    while (fgetc(arquivo) != '\n'){}
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizReferencia[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
 
     fclose(arquivo);
+
+    for (int i = 0; i < size; i++){
+        if (matrizReferencia[linha-1][i] == '0' && matrizAtual[linha-1][i] != ' '){
+            return 0; // não fechou a linha
+        }
+    }
+
+    return 1;
 }
 
-void alteraMatriz(int linha, int coluna, int *vida)
+
+void alteraMatriz(int linha, int coluna, int *vida, int nivel)
 {
     int i,k=0;
+    int charCounter = 0;
+    char character;
     FILE* matriz = fopen("copia.txt","r");
-    int coord = coluna+(linha-1)*(tamanho+1);
+    for (i = 0; i < nivel-1; i++){     //pulando o arquivo até o ponto que eu quero
+        while (1){
+            character = fgetc(matriz);
+            charCounter++;
+            if (character == '*'){break;}
+        }
+        charCounter++;
+        fgetc(matriz);
+    }
+
+    i = 0;
+    int coord = coluna+(linha-1)*(tamanho+1)+charCounter;
+    int relativecoord = coluna+(linha - 1)*(tamanho+1);
     char errou, ch;
-    for (i=0;i<(tamanho*(tamanho+5)+2);i++) // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
+    for (i=0;i<(tamanho*(tamanho+5)+2);i++){ // O cálculo é a forma simplificada de (tamanho+1)*tamanho+tamanho*2*2+2
         getc(matriz);
-    for(i=0;i<coord;i++)
+    }
+    for(i=0;i<relativecoord;i++){
         errou = getc(matriz);
+    }
+    
     fclose(matriz);
 
     if (errou == '1') {
@@ -474,6 +463,8 @@ void alteraMatriz(int linha, int coluna, int *vida)
     } else {
         FILE* velhaMatriz = fopen("copia.txt", "r");
         FILE* novaMatriz = fopen("copianova.txt", "w");
+
+
 
         while ((ch = fgetc(velhaMatriz)) != EOF) {
             if (k == (coord - 1)) {
@@ -501,24 +492,188 @@ void alteraMatriz(int linha, int coluna, int *vida)
         getchar(); // Captura a tecla enter
     }
 }
-int checkWin(int *valores_somas_linhas, int *valores_somas_colunas, int modo) {
-    int i;
+int checkWin(int modo) {
+    FILE* arquivo = fopen("copia.txt", "r");
+    int size;
+    if (modo == 1){size = 4;}
+    else if (modo == 2){size = 6;}
+    else if (modo == 3){size = 7;}
 
-    for (i = 0; i < tamanho; i++) {
-        if (calculaSomaLinha(i) != valores_somas_linhas[i]) {
-            return 0; // Se alguma linha não estiver correta, retorna 0
-        }
+    int matrizAtual[size][size];
+    int matrizReferencia[size][size];
+
+
+    for (int i = 0; i < nivel-1; i++){
+        while (fgetc(arquivo) != '*'){}
+        fgetc(arquivo);
     }
 
-    for (i = 0; i < tamanho; i++) {
-        if (calculaSomaColuna(i) != valores_somas_colunas[i]) {
-            return 0; // Se alguma coluna não estiver correta, retorna 0
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizAtual[i][ii] = fgetc(arquivo);
         }
+        fgetc(arquivo);
     }
 
+    while (fgetc(arquivo) != '\n'){}
+    while (fgetc(arquivo) != '\n'){}
 
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizReferencia[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
 
+    fclose(arquivo);
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            if (matrizReferencia[i][ii] == '0' && matrizAtual[i][ii] != ' '){
+                return 0;
+            }
+        }
+    }
+    getchar();
     return 1; // Venceu
+}
+
+void limpaLinha(int modo, int linha){
+FILE* arquivo = fopen("copia.txt", "r");
+    int size;
+    if (modo == 1){size = 4;}
+    else if (modo == 2){size = 6;}
+    else if (modo == 3){size = 7;}
+
+    int matrizAtual[size][size];
+    int matrizReferencia[size][size];
+
+
+    for (int i = 0; i < nivel-1; i++){
+        while (fgetc(arquivo) != '*'){}
+        fgetc(arquivo);
+    }
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizAtual[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
+
+    while (fgetc(arquivo) != '\n'){}
+    while (fgetc(arquivo) != '\n'){}
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizReferencia[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
+
+    fclose(arquivo);
+}
+
+void limpaColuna(int modo, int coluna){
+    coluna = coluna-1;  
+    FILE* novoArquivo = fopen("copianova.txt", "w");
+    FILE* arquivo = fopen("copia.txt", "r");
+    int size;
+    if (modo == 1){size = 4;}
+    else if (modo == 2){size = 6;}
+    else if (modo == 3){size = 7;}
+
+    int matrizAtual[size][size];
+    int matrizReferencia[size][size];
+
+
+    for (int i = 0; i < nivel-1; i++){
+        while (1){
+            char ch = fgetc(arquivo);
+            fputc(ch, novoArquivo);
+            if (fgetc(arquivo) != '*'){
+                break;
+            }
+        }
+        char ch = fgetc(arquivo);
+        fputc(ch, novoArquivo);
+    }
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizAtual[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
+
+    char colunaSum[size][5];
+    char linhaSum[size][5];
+
+
+    for (int i = 0; i < size; i++){
+        colunaSum[i][0] = fgetc(arquivo);
+        colunaSum[i][1] = fgetc(arquivo);
+        colunaSum[i][2] = '\0';
+    }
+    fgetc(arquivo);
+    for (int i = 0; i < size; i++){
+        linhaSum[i][0] = fgetc(arquivo);
+        linhaSum[i][1] = fgetc(arquivo);
+        linhaSum[i][2] = '\0';
+    }
+    fgetc(arquivo);
+
+    for (int i = 0; i < size; i++){
+        for (int ii = 0; ii < size; ii++){
+            matrizReferencia[i][ii] = fgetc(arquivo);
+        }
+        fgetc(arquivo);
+    }
+
+    strcpy(colunaSum[coluna], "  ");
+
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            fputc(matrizAtual[i][j], novoArquivo);
+        }
+        fputc( '\n', novoArquivo);
+    }
+
+    for (int i = 0; i < size; i++){
+        fputs(colunaSum[i], novoArquivo);
+    }
+    fputc('\n', novoArquivo);
+    for (int i = 0; i < size; i++){
+        fputs(linhaSum[i], novoArquivo);
+    }
+    fputc('\n', novoArquivo);
+
+    for (int i = 0; i < size; i++){
+        for (int j = 0; j < size; j++){
+            fputc(matrizReferencia[i][j], novoArquivo);
+        }
+        fputc( '\n', novoArquivo);
+    }
+    
+    char ch;
+    while (fscanf(arquivo, "%c", &ch) != EOF){
+        fputc(ch, novoArquivo);
+    }
+
+    fclose(arquivo);
+    fclose(novoArquivo);
+    
+     novoArquivo = fopen("copianova.txt", "r");
+     arquivo = fopen("copia.txt", "w");
+
+    while (fscanf(novoArquivo, "%c", &ch) != EOF){
+        fputc(ch, arquivo);
+    }
+
+    fclose (arquivo);
+    fclose(novoArquivo);
+
+    
 }
 void matriz() //Gera a matriz
 {
@@ -586,6 +741,7 @@ void matriz() //Gera a matriz
 }
 
 int main() {
+    nivel = 1;
     int index = leRanking();
     limpaTela();
     char nome[50];
@@ -619,12 +775,11 @@ int main() {
 
                 // Chama a função para alterar a matriz e atualiza as vidas
                 int vidas_anteriores = vida;
-                alteraMatriz(linha, coluna, &vida);
+                alteraMatriz(linha, coluna, &vida, nivel);
                 getchar();
 
                     if (vidas_anteriores == vida) {
-                        calculaSomas(valores_somas_linhas, valores_somas_colunas);
-                         if (checkWin(valores_somas_linhas, valores_somas_colunas, modo)) {
+                         if (checkWin(modo)) {
                             if(modo == 1){
                                 ponto+=50;
                             }else if(modo == 2){
@@ -640,41 +795,25 @@ int main() {
                             getchar();
                             limpaTela();
                             nivel+=1;
+                            copiaMatriz(modo);                   
                             break;
                         }
 
                         // Verifica se a linha foi fechada
-                        int soma_linha = calculaSomaLinha(linha - 1);
-                        if (soma_linha == valores_somas_linhas[linha - 1]) {
+                        if (calculaSomaLinha(linha, modo)){
+                            limpaLinha(modo, linha);
                             printf(GREEN "Muito bem, voce " GREEN "fechou a linha %d! " RESET "Pressione <enter> para continuar.", linha);
                             getchar(); // Captura a tecla enter
-                           
-                            
                         }
-
-                        // Verifica se a coluna foi fechada
-                        int soma_coluna = calculaSomaColuna(coluna - 1);
-                        if (soma_coluna == valores_somas_colunas[coluna - 1]) {
+                        if (calculaSomaColuna(coluna, modo)){
+                            limpaColuna(modo, coluna);
                             printf("Muito bem, voce " GREEN "fechou a coluna %d! " RESET "Pressione <enter> para continuar.", coluna);
                             getchar(); // Captura a tecla enter
-
-                            
                         }
-                         
-                        
+
                     }
                 // Reimprime a matriz após a jogada
                 limpaTela();
-                
-                /*if (acertos == ini[nivel-1]) //verifica se passou de nível
-                {
-                    printf(GREEN"VOCE VENCEU PRESSIONE <enter> PARA IR PARA A PROXIMA MATRIZ"RESET);
-                    getchar();
-                    limpaTela();
-                    nivel+=1;
-                    acertos=0;
-                }*/
-
                 matriz(modo); // Reimprimir a matriz atualizada
 
                 if (vida == 0) { // Se o jogador perder todas as vidas
