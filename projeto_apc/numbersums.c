@@ -539,9 +539,7 @@ int checkWin(int modo) {
 }
 
 void limpaLinha(int modo, int linha){
-    linha = linha-1;  
-    FILE* novoArquivo = fopen("copianova.txt", "w");
-    FILE* arquivo = fopen("copia.txt", "r");
+FILE* arquivo = fopen("copia.txt", "r");
     int size;
     if (modo == 1){size = 4;}
     else if (modo == 2){size = 6;}
@@ -552,15 +550,8 @@ void limpaLinha(int modo, int linha){
 
 
     for (int i = 0; i < nivel-1; i++){
-        while (1){
-            char ch = fgetc(arquivo);
-            fputc(ch, novoArquivo);
-            if (fgetc(arquivo) != '*'){
-                break;
-            }
-        }
-        char ch = fgetc(arquivo);
-        fputc(ch, novoArquivo);
+        while (fgetc(arquivo) != '*'){}
+        fgetc(arquivo);
     }
 
     for (int i = 0; i < size; i++){
@@ -570,22 +561,8 @@ void limpaLinha(int modo, int linha){
         fgetc(arquivo);
     }
 
-    char colunaSum[size][5];
-    char linhaSum[size][5];
-
-
-    for (int i = 0; i < size; i++){
-        colunaSum[i][0] = fgetc(arquivo);
-        colunaSum[i][1] = fgetc(arquivo);
-        colunaSum[i][2] = '\0';
-    }
-    fgetc(arquivo);
-    for (int i = 0; i < size; i++){
-        linhaSum[i][0] = fgetc(arquivo);
-        linhaSum[i][1] = fgetc(arquivo);
-        linhaSum[i][2] = '\0';
-    }
-    fgetc(arquivo);
+    while (fgetc(arquivo) != '\n'){}
+    while (fgetc(arquivo) != '\n'){}
 
     for (int i = 0; i < size; i++){
         for (int ii = 0; ii < size; ii++){
@@ -594,50 +571,7 @@ void limpaLinha(int modo, int linha){
         fgetc(arquivo);
     }
 
-    strcpy(linhaSum[linha], "  ");
-
-    for (int i = 0; i < size; i++){
-        for (int j = 0; j < size; j++){
-            fputc(matrizAtual[i][j], novoArquivo);
-        }
-        fputc( '\n', novoArquivo);
-    }
-
-    for (int i = 0; i < size; i++){
-        fputs(colunaSum[i], novoArquivo);
-    }
-    fputc('\n', novoArquivo);
-    for (int i = 0; i < size; i++){
-        fputs(linhaSum[i], novoArquivo);
-    }
-    fputc('\n', novoArquivo);
-
-    for (int i = 0; i < size; i++){
-        for (int j = 0; j < size; j++){
-            fputc(matrizReferencia[i][j], novoArquivo);
-        }
-        fputc( '\n', novoArquivo);
-    }
-    
-    char ch;
-    while (fscanf(arquivo, "%c", &ch) != EOF){
-        fputc(ch, novoArquivo);
-    }
-
     fclose(arquivo);
-    fclose(novoArquivo);
-    
-     novoArquivo = fopen("copianova.txt", "r");
-     arquivo = fopen("copia.txt", "w");
-
-    while (fscanf(novoArquivo, "%c", &ch) != EOF){
-        fputc(ch, arquivo);
-    }
-
-    fclose (arquivo);
-    fclose(novoArquivo);
-
-    
 }
 
 void limpaColuna(int modo, int coluna){
@@ -846,14 +780,16 @@ int main() {
 
                     if (vidas_anteriores == vida) {
                          if (checkWin(modo)) {
+                            int pontosganhos=0;
                             if(modo == 1){
-                                ponto+=50;
+                                pontosganhos+=50;
                             }else if(modo == 2){
-                                ponto+=100;
+                                pontosganhos+=100;
                             }else if(modo == 3){
-                                ponto+=200;
+                                pontosganhos+=200;
                             }
-                            adicionaJogador(&index, nome, ponto); // Adiciona o novo jogador
+                            ponto += pontosganhos;
+                            adicionaJogador(&index, nome, pontosganhos); // Adiciona o novo jogador
                             ordenaRanking(index); // Ordena o ranking por pontuação
                             escreveRanking(index); // Escreve o ranking atualizado no arquivo binário
                             voceVenceu();
