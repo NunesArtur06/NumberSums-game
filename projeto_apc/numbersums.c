@@ -931,7 +931,9 @@ int main()
                         case 3: limite=7; break;
                     }
                     printf("Digite a linha e coluna do elemento a ser apagado: ");
+                    fflush(stdin);
                     scanf("%d %d", &linha, &coluna);
+                    fflush(stdin);
                     if (linha>=1 && linha<=limite && coluna>=1 && coluna<=limite)
                         break;
                     else
