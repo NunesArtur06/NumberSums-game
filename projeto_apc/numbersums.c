@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int tamanho, nivel = 1, acertos = 0; // tamanho da matriz, nivel atual, quantidade de acertos
+int tamanho, nivel = 1, acertos = 0, niveisVencidos=0; // tamanho da matriz, nivel atual, quantidade de acertos
 char nomes[900][20];                 // 900 linhas de 20 caracteres cada
 int pts[900];                        // lista das pontuacoes
 int ponto = 0;
@@ -909,6 +909,7 @@ int main()
 
     while (1)
     {
+        printf("modo: %d\n\n",modo);
         menu();
         scanf("%d", &num);
         getchar(); // Consumir o newline residual
@@ -963,14 +964,17 @@ int main()
                         if (modo == 1)
                         {
                             novapont = ponto + 50;
+                            niveisVencidos+=1;
                         }
                         else if (modo == 2)
                         {
                             novapont = ponto + 100;
+                            niveisVencidos+=1;
                         }
                         else if (modo == 3)
                         {
                             novapont = ponto + 200;
+                            niveisVencidos+=1;
                         }
                         adicionaJogador(&index, nome, novapont); // Adiciona o novo jogador
                         ordenaRanking(index);                    // Ordena o ranking por pontuação
@@ -982,6 +986,15 @@ int main()
                         nivel += 1;
                         vida = 5;
                         copiaMatriz(modo);
+                        if(niveisVencidos%4==0)
+                        {
+                            if(modo<3)
+                            {
+                                modo+=1;
+                                copiaMatriz(modo);
+                            }
+                            nivel=1;
+                        }
                         break;
                     }
                     limpaTela();
@@ -1046,6 +1059,7 @@ int main()
                         limpaTela();
                         printf(GREEN "MODO INICIANTE SELECIONADO\n" RESET);
                         copiaMatriz(modo);
+                        nivel=1;
                         printf("\n\n\n\n\nPressione <enter> para voltar: ");
                     }
                     else if (modo == 2)
@@ -1053,6 +1067,7 @@ int main()
                         limpaTela();
                         printf(GREEN "MODO INTERMEDIARIO SELECIONADO\n" RESET);
                         copiaMatriz(modo);
+                        nivel=1;
                         printf("\n\n\n\n\nPressione <enter> para voltar: ");
                     }
                     else if (modo == 3)
@@ -1060,6 +1075,7 @@ int main()
                         limpaTela();
                         printf(GREEN "MODO AVANCADO SELECIONADO\n" RESET);
                         copiaMatriz(modo);
+                        nivel=1;
                         printf("\n\n\n\n\nPressione <enter> para voltar: ");
                     }
                     else
