@@ -332,14 +332,7 @@ int calculaSomaColuna(int coluna, int modo)
     {
     }
 
-    for (int i = 0; i < size; i++)
-    {
-        for (int ii = 0; ii < size; ii++)
-        {
-            matrizReferencia[i][ii] = fgetc(arquivo);
-        }
-        fgetc(arquivo);
-    }
+   
 
     fclose(arquivo);
 
@@ -395,14 +388,8 @@ int calculaSomaLinha(int linha, int modo)
         }
         fgetc(arquivo);
     }
-    for (int i = 0; i < size; i++)
-    {
-        for (int ii = 0; ii < size; ii++)
-        {
-            printf("%c ", matrizAtual[i][ii]);
-        }
-        printf("\n");
-    }
+    
+    
     while (fgetc(arquivo) != '\n')
     {
     }
@@ -418,16 +405,8 @@ int calculaSomaLinha(int linha, int modo)
         }
         fgetc(arquivo);
     }
-    for (int i = 0; i < size; i++)
-    {
-        for (int ii = 0; ii < size; ii++)
-        {
-            printf("%c ", matrizReferencia[i][ii]);
-        }
-        printf("\n");
-    }
+    
     fclose(arquivo);
-    getchar();
     for (int i = 0; i < size; i++)
     {
         if (matrizReferencia[linha - 1][i] == '0' && matrizAtual[linha - 1][i] != ' ')
