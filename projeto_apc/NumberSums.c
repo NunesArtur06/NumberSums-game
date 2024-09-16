@@ -6,6 +6,7 @@ char nomes[900][20];                 // 900 linhas de 20 caracteres cada
 int pts[900];                        // lista das pontuacoes
 int ponto = 0;
 
+//para windows e linux
 
 #ifdef _WIN32
     #define CLEAR "cls"
